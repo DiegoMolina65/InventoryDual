@@ -1,0 +1,6 @@
+import 'package:m_dual_inventario/domain/entities/almacen_por_local/almacen_x_local.dart';
+
+abstract class AlmacenLocalDatasource {
+  Future<List<AlmacenXLocal>> obtenerAlmacenesPorLocal();
+  Future<bool> guardarDatosAlmacen(List<AlmacenXLocal> almacenXLocal);
+}
