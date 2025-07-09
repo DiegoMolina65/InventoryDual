@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detalle_recuento_inventario/detalle_recuento_inventario.dart';
 import 'package:m_dual_inventario/presentation/screens/assigned_counts/assigned_count_details_screen/provider/assigned_count_details_provider.dart';
+import 'package:m_dual_inventario/shared/helpers/extensions/number_extensions.dart';
 import 'package:m_dual_inventario/shared/helpers/extensions/validators_inputs.dart';
 import 'package:m_dual_inventario/shared/widgets/export_custom_widgets.dart';
 

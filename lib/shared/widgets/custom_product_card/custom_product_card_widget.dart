@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detalle_recuento_inventario/detalle_recuento_inventario.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
+import 'package:m_dual_inventario/domain/entities/usuario/usuario.dart';
+import 'package:m_dual_inventario/shared/helpers/extensions/number_extensions.dart';
 
 class CustomProductCard extends StatefulWidget {
   final Producto? producto;
+  final Usuario? usuario;
   final DetalleRecuentoInventario? detalleConteo;
   final String? lote;
   final bool isSelected;
@@ -14,6 +17,7 @@ class CustomProductCard extends StatefulWidget {
   const CustomProductCard({
     Key? key,
     this.lote,
+    this.usuario,
     this.detalleConteo,
     this.isSelected = false,
     this.onTap,
@@ -328,28 +332,33 @@ class _CustomProductCardState extends State<CustomProductCard>
                           ],
                         ),
                         SizedBox(height: isTablet ? 6 : 4),
-                        Row(
-                          children: [
-                            Icon(Icons.inventory,
-                                size: textSize, color: primaryColor),
-                            SizedBox(width: isTablet ? 6 : 4),
-                            Text(
-                              'Stock: ',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: labelFontSize,
-                              ),
-                            ),
-                            Text(
-                              '${widget.detalleConteo?.cantidadStock ?? widget.producto?.stock ?? 0} UND',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: valueFontSize,
-                                color: primaryColor,
-                              ),
-                            ),
-                          ],
-                        ),
+                        (widget.usuario?.esSupervisor ?? false)
+                            ? Row(
+                                children: [
+                                  Icon(Icons.inventory,
+                                      size: textSize, color: primaryColor),
+                                  SizedBox(width: isTablet ? 6 : 4),
+                                  Text(
+                                    'Stock: ',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: labelFontSize,
+                                    ),
+                                  ),
+                                  Text(
+                                    (widget.detalleConteo?.cantidadStock ??
+                                            widget.producto?.stock ??
+                                            0.0)
+                                        .toStringDecimal('UND'),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: valueFontSize,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
                         if (widget.lote != null &&
                             (widget.lote ?? '').isNotEmpty)
                           Padding(
