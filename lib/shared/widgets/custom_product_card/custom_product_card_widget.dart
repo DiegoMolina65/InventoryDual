@@ -4,25 +4,23 @@ import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/produc
 
 class CustomProductCard extends StatefulWidget {
   final Producto? producto;
-  final DetalleRecuentoInventario? detalleRecuentoInventario;
+  final DetalleRecuentoInventario? detalleConteo;
   final String? lote;
   final bool isSelected;
   final void Function(bool tieneLotes)? onTap;
   final VoidCallback? onDelete;
-  // final VoidCallback? onTapLotes;
   final bool showCheckbox;
 
   const CustomProductCard({
     Key? key,
     this.lote,
+    this.detalleConteo,
     this.isSelected = false,
     this.onTap,
     this.onDelete,
     this.showCheckbox = true,
     this.producto,
-    this.detalleRecuentoInventario,
-    // this.onTapLotes,
-  })  : assert(producto != null || detalleRecuentoInventario != null),
+  })  : assert(producto != null),
         super(key: key);
 
   @override
@@ -121,8 +119,6 @@ class _CustomProductCardState extends State<CustomProductCard>
   List<dynamic>? _obtenerListaLotes() {
     if (widget.producto != null) {
       return widget.producto!.listaLotes;
-    } else if (widget.detalleRecuentoInventario != null) {
-      return widget.detalleRecuentoInventario!.listaLotes;
     }
     return null;
   }
@@ -131,8 +127,6 @@ class _CustomProductCardState extends State<CustomProductCard>
   List<dynamic>? _obtenerListaLotesOld(CustomProductCard oldWidget) {
     if (oldWidget.producto != null) {
       return oldWidget.producto!.listaLotes;
-    } else if (oldWidget.detalleRecuentoInventario != null) {
-      return oldWidget.detalleRecuentoInventario!.listaLotes;
     }
     return null;
   }
@@ -141,8 +135,6 @@ class _CustomProductCardState extends State<CustomProductCard>
   Producto? _obtenerProducto() {
     if (widget.producto != null) {
       return widget.producto;
-    } else if (widget.detalleRecuentoInventario != null) {
-      return widget.detalleRecuentoInventario!.producto;
     }
     return null;
   }
@@ -349,7 +341,7 @@ class _CustomProductCardState extends State<CustomProductCard>
                               ),
                             ),
                             Text(
-                              '${producto.stock.toStringAsFixed(2)} UND',
+                              '${widget.detalleConteo?.cantidadStock ?? widget.producto?.stock ?? 0} UND',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: valueFontSize,

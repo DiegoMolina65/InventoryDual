@@ -23,6 +23,7 @@ mixin _$BatchModel {
   String get code => throw _privateConstructorUsedError;
   DateTime get expirationDate => throw _privateConstructorUsedError;
   double get stock => throw _privateConstructorUsedError;
+  double get quantity => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -36,7 +37,8 @@ abstract class $BatchModelCopyWith<$Res> {
           BatchModel value, $Res Function(BatchModel) then) =
       _$BatchModelCopyWithImpl<$Res, BatchModel>;
   @useResult
-  $Res call({String code, DateTime expirationDate, double stock});
+  $Res call(
+      {String code, DateTime expirationDate, double stock, double quantity});
 }
 
 /// @nodoc
@@ -55,6 +57,7 @@ class _$BatchModelCopyWithImpl<$Res, $Val extends BatchModel>
     Object? code = null,
     Object? expirationDate = null,
     Object? stock = null,
+    Object? quantity = null,
   }) {
     return _then(_value.copyWith(
       code: null == code
@@ -69,6 +72,10 @@ class _$BatchModelCopyWithImpl<$Res, $Val extends BatchModel>
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
               as double,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -81,7 +88,8 @@ abstract class _$$BatchModelImplCopyWith<$Res>
       __$$BatchModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String code, DateTime expirationDate, double stock});
+  $Res call(
+      {String code, DateTime expirationDate, double stock, double quantity});
 }
 
 /// @nodoc
@@ -98,6 +106,7 @@ class __$$BatchModelImplCopyWithImpl<$Res>
     Object? code = null,
     Object? expirationDate = null,
     Object? stock = null,
+    Object? quantity = null,
   }) {
     return _then(_$BatchModelImpl(
       code: null == code
@@ -112,6 +121,10 @@ class __$$BatchModelImplCopyWithImpl<$Res>
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
               as double,
+      quantity: null == quantity
+          ? _value.quantity
+          : quantity // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -120,7 +133,10 @@ class __$$BatchModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BatchModelImpl implements _BatchModel {
   _$BatchModelImpl(
-      {required this.code, required this.expirationDate, required this.stock});
+      {required this.code,
+      required this.expirationDate,
+      required this.stock,
+      required this.quantity});
 
   factory _$BatchModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$BatchModelImplFromJson(json);
@@ -131,10 +147,12 @@ class _$BatchModelImpl implements _BatchModel {
   final DateTime expirationDate;
   @override
   final double stock;
+  @override
+  final double quantity;
 
   @override
   String toString() {
-    return 'BatchModel(code: $code, expirationDate: $expirationDate, stock: $stock)';
+    return 'BatchModel(code: $code, expirationDate: $expirationDate, stock: $stock, quantity: $quantity)';
   }
 
   @override
@@ -145,12 +163,15 @@ class _$BatchModelImpl implements _BatchModel {
             (identical(other.code, code) || other.code == code) &&
             (identical(other.expirationDate, expirationDate) ||
                 other.expirationDate == expirationDate) &&
-            (identical(other.stock, stock) || other.stock == stock));
+            (identical(other.stock, stock) || other.stock == stock) &&
+            (identical(other.quantity, quantity) ||
+                other.quantity == quantity));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, code, expirationDate, stock);
+  int get hashCode =>
+      Object.hash(runtimeType, code, expirationDate, stock, quantity);
 
   @JsonKey(ignore: true)
   @override
@@ -170,7 +191,8 @@ abstract class _BatchModel implements BatchModel {
   factory _BatchModel(
       {required final String code,
       required final DateTime expirationDate,
-      required final double stock}) = _$BatchModelImpl;
+      required final double stock,
+      required final double quantity}) = _$BatchModelImpl;
 
   factory _BatchModel.fromJson(Map<String, dynamic> json) =
       _$BatchModelImpl.fromJson;
@@ -181,6 +203,8 @@ abstract class _BatchModel implements BatchModel {
   DateTime get expirationDate;
   @override
   double get stock;
+  @override
+  double get quantity;
   @override
   @JsonKey(ignore: true)
   _$$BatchModelImplCopyWith<_$BatchModelImpl> get copyWith =>

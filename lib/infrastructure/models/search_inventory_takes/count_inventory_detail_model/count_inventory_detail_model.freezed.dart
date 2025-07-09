@@ -34,8 +34,8 @@ mixin _$CountInventoryDetailModel {
   String get jsonDetailCount => throw _privateConstructorUsedError;
   DateTime get dateCount => throw _privateConstructorUsedError;
   ProductModel? get product => throw _privateConstructorUsedError;
-  String? get codeBatch => throw _privateConstructorUsedError;
-  List<BatchModel>? get lstBatch => throw _privateConstructorUsedError;
+  String? get codeBatch =>
+      throw _privateConstructorUsedError; // List<BatchModel>? lstBatch,
   List<ImageCountModel>? get listImageCount =>
       throw _privateConstructorUsedError;
   List<DetailCountModel>? get listDetailCount =>
@@ -73,7 +73,6 @@ abstract class $CountInventoryDetailModelCopyWith<$Res> {
       DateTime dateCount,
       ProductModel? product,
       String? codeBatch,
-      List<BatchModel>? lstBatch,
       List<ImageCountModel>? listImageCount,
       List<DetailCountModel>? listDetailCount,
       @JsonKey(ignore: true) UnitMeasureModel? umBase,
@@ -113,7 +112,6 @@ class _$CountInventoryDetailModelCopyWithImpl<$Res,
     Object? dateCount = null,
     Object? product = freezed,
     Object? codeBatch = freezed,
-    Object? lstBatch = freezed,
     Object? listImageCount = freezed,
     Object? listDetailCount = freezed,
     Object? umBase = freezed,
@@ -177,10 +175,6 @@ class _$CountInventoryDetailModelCopyWithImpl<$Res,
           ? _value.codeBatch
           : codeBatch // ignore: cast_nullable_to_non_nullable
               as String?,
-      lstBatch: freezed == lstBatch
-          ? _value.lstBatch
-          : lstBatch // ignore: cast_nullable_to_non_nullable
-              as List<BatchModel>?,
       listImageCount: freezed == listImageCount
           ? _value.listImageCount
           : listImageCount // ignore: cast_nullable_to_non_nullable
@@ -265,7 +259,6 @@ abstract class _$$CountInventoryDetailModelImplCopyWith<$Res>
       DateTime dateCount,
       ProductModel? product,
       String? codeBatch,
-      List<BatchModel>? lstBatch,
       List<ImageCountModel>? listImageCount,
       List<DetailCountModel>? listDetailCount,
       @JsonKey(ignore: true) UnitMeasureModel? umBase,
@@ -307,7 +300,6 @@ class __$$CountInventoryDetailModelImplCopyWithImpl<$Res>
     Object? dateCount = null,
     Object? product = freezed,
     Object? codeBatch = freezed,
-    Object? lstBatch = freezed,
     Object? listImageCount = freezed,
     Object? listDetailCount = freezed,
     Object? umBase = freezed,
@@ -371,10 +363,6 @@ class __$$CountInventoryDetailModelImplCopyWithImpl<$Res>
           ? _value.codeBatch
           : codeBatch // ignore: cast_nullable_to_non_nullable
               as String?,
-      lstBatch: freezed == lstBatch
-          ? _value._lstBatch
-          : lstBatch // ignore: cast_nullable_to_non_nullable
-              as List<BatchModel>?,
       listImageCount: freezed == listImageCount
           ? _value._listImageCount
           : listImageCount // ignore: cast_nullable_to_non_nullable
@@ -417,14 +405,12 @@ class _$CountInventoryDetailModelImpl implements _CountInventoryDetailModel {
       required this.dateCount,
       required this.product,
       this.codeBatch,
-      final List<BatchModel>? lstBatch,
       required final List<ImageCountModel>? listImageCount,
       required final List<DetailCountModel>? listDetailCount,
       @JsonKey(ignore: true) this.umBase,
       @JsonKey(ignore: true) this.umLow,
       required this.numberCount})
-      : _lstBatch = lstBatch,
-        _listImageCount = listImageCount,
+      : _listImageCount = listImageCount,
         _listDetailCount = listDetailCount;
 
   factory _$CountInventoryDetailModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -458,17 +444,9 @@ class _$CountInventoryDetailModelImpl implements _CountInventoryDetailModel {
   final ProductModel? product;
   @override
   final String? codeBatch;
-  final List<BatchModel>? _lstBatch;
-  @override
-  List<BatchModel>? get lstBatch {
-    final value = _lstBatch;
-    if (value == null) return null;
-    if (_lstBatch is EqualUnmodifiableListView) return _lstBatch;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
+// List<BatchModel>? lstBatch,
   final List<ImageCountModel>? _listImageCount;
+// List<BatchModel>? lstBatch,
   @override
   List<ImageCountModel>? get listImageCount {
     final value = _listImageCount;
@@ -499,7 +477,7 @@ class _$CountInventoryDetailModelImpl implements _CountInventoryDetailModel {
 
   @override
   String toString() {
-    return 'CountInventoryDetailModel(codeCountInventory: $codeCountInventory, codeProduct: $codeProduct, nameProduct: $nameProduct, quantityStock: $quantityStock, quantityStockInitial: $quantityStockInitial, quantityCount: $quantityCount, codeUnitMeasure: $codeUnitMeasure, observations: $observations, checkUbication: $checkUbication, correctUbication: $correctUbication, jsonDetailCount: $jsonDetailCount, dateCount: $dateCount, product: $product, codeBatch: $codeBatch, lstBatch: $lstBatch, listImageCount: $listImageCount, listDetailCount: $listDetailCount, umBase: $umBase, umLow: $umLow, numberCount: $numberCount)';
+    return 'CountInventoryDetailModel(codeCountInventory: $codeCountInventory, codeProduct: $codeProduct, nameProduct: $nameProduct, quantityStock: $quantityStock, quantityStockInitial: $quantityStockInitial, quantityCount: $quantityCount, codeUnitMeasure: $codeUnitMeasure, observations: $observations, checkUbication: $checkUbication, correctUbication: $correctUbication, jsonDetailCount: $jsonDetailCount, dateCount: $dateCount, product: $product, codeBatch: $codeBatch, listImageCount: $listImageCount, listDetailCount: $listDetailCount, umBase: $umBase, umLow: $umLow, numberCount: $numberCount)';
   }
 
   @override
@@ -534,7 +512,6 @@ class _$CountInventoryDetailModelImpl implements _CountInventoryDetailModel {
             (identical(other.product, product) || other.product == product) &&
             (identical(other.codeBatch, codeBatch) ||
                 other.codeBatch == codeBatch) &&
-            const DeepCollectionEquality().equals(other._lstBatch, _lstBatch) &&
             const DeepCollectionEquality()
                 .equals(other._listImageCount, _listImageCount) &&
             const DeepCollectionEquality()
@@ -563,7 +540,6 @@ class _$CountInventoryDetailModelImpl implements _CountInventoryDetailModel {
         dateCount,
         product,
         codeBatch,
-        const DeepCollectionEquality().hash(_lstBatch),
         const DeepCollectionEquality().hash(_listImageCount),
         const DeepCollectionEquality().hash(_listDetailCount),
         umBase,
@@ -602,7 +578,6 @@ abstract class _CountInventoryDetailModel implements CountInventoryDetailModel {
       required final DateTime dateCount,
       required final ProductModel? product,
       final String? codeBatch,
-      final List<BatchModel>? lstBatch,
       required final List<ImageCountModel>? listImageCount,
       required final List<DetailCountModel>? listDetailCount,
       @JsonKey(ignore: true) final UnitMeasureModel? umBase,
@@ -640,9 +615,7 @@ abstract class _CountInventoryDetailModel implements CountInventoryDetailModel {
   ProductModel? get product;
   @override
   String? get codeBatch;
-  @override
-  List<BatchModel>? get lstBatch;
-  @override
+  @override // List<BatchModel>? lstBatch,
   List<ImageCountModel>? get listImageCount;
   @override
   List<DetailCountModel>? get listDetailCount;

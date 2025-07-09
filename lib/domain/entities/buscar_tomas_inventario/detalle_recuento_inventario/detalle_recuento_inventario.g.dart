@@ -25,9 +25,6 @@ _$DetalleRecuentoInventarioImpl _$$DetalleRecuentoInventarioImplFromJson(
       producto: json['producto'] == null
           ? null
           : Producto.fromJson(json['producto'] as Map<String, dynamic>),
-      listaLotes: (json['listaLotes'] as List<dynamic>?)
-          ?.map((e) => LotesEntidad.fromJson(e as Map<String, dynamic>))
-          .toList(),
       listaImagenConteo: (json['lista_imagen_conteo'] as List<dynamic>?)
           ?.map((e) => ConteoImagen.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -53,7 +50,6 @@ Map<String, dynamic> _$$DetalleRecuentoInventarioImplToJson(
       'fecha_conteo': instance.fechaConteo.toIso8601String(),
       'codigoLote': instance.codigoLote,
       'producto': instance.producto,
-      'listaLotes': instance.listaLotes,
       'lista_imagen_conteo': instance.listaImagenConteo,
       'lista_detalle_conteo': instance.listaDetalleConteo,
     };

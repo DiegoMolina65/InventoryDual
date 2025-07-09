@@ -29,7 +29,7 @@ class DetalleRecuentoInventario with _$DetalleRecuentoInventario {
       @JsonKey(name: 'fecha_conteo') required DateTime fechaConteo,
       String? codigoLote,
       required Producto? producto,
-      List<LotesEntidad>? listaLotes, // SOLO LECTURA
+      // List<LotesEntidad>? listaLotes, // SOLO LECTURA
       @JsonKey(name: 'lista_imagen_conteo')
       List<ConteoImagen>? listaImagenConteo,
       @JsonKey(name: 'lista_detalle_conteo')

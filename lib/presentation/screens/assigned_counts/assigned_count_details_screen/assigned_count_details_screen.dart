@@ -51,8 +51,6 @@ class _DetalleConteoAsignadoScreenState
   late String _nombreToma;
   late int _nroConteo;
   late int _codigoAlmacen;
-  int _totalProductos = 0;
-  int _totalProductosPendientes = 0;
 
   @override
   void initState() {
@@ -128,8 +126,11 @@ class _DetalleConteoAsignadoScreenState
         await detalleProvider.cargarDetalleConteo(_tdi);
       }
     }
-    _actualizarContadoresReales();
 
+    _actualizarListaBuscador();
+  }
+
+  void _actualizarListaBuscador() {
     final conteo = ref.read(detalleConteoAsignadoProvider).conteoInventario;
     if (conteo != null) {
       ref
@@ -138,20 +139,15 @@ class _DetalleConteoAsignadoScreenState
     }
   }
 
-  void _actualizarContadoresReales() {
-    final state = ref.read(detalleConteoAsignadoProvider);
-    if (state.conteoInventario != null) {
-      _totalProductos =
-          state.conteoInventario!.listaDetalleRecuentoInventario.length;
+  (int total, int pendientes) _calcularContadores(ConteoInventario? conteo) {
+    if (conteo == null) return (0, 0);
 
-      final pendientes = state.conteoInventario!.listaDetalleRecuentoInventario
-          .where(
-            (detalle) => !(detalle.esConfirmado ?? false),
-          )
-          .length;
+    final total = conteo.listaDetalleRecuentoInventario.length;
+    final pendientes = conteo.listaDetalleRecuentoInventario
+        .where((detalle) => !(detalle.esConfirmado ?? false))
+        .length;
 
-      _totalProductosPendientes = pendientes;
-    }
+    return (total, pendientes);
   }
 
   void _confirmarGuardarConteo(BuildContext context) async {
@@ -164,7 +160,8 @@ class _DetalleConteoAsignadoScreenState
       return;
     }
 
-    if (_totalProductosPendientes > 0) {
+    final (_, pendientes) = _calcularContadores(state.conteoInventario);
+    if (pendientes > 0) {
       _mostrarMensajeNoGuardar(context);
       return;
     }
@@ -202,10 +199,14 @@ class _DetalleConteoAsignadoScreenState
   }
 
   void _mostrarMensajeNoGuardar(BuildContext context) {
-    CustomSnackBar.show(context,
-        message:
-            'No puede guardar el conteo porque faltan productos por confirmar',
-        type: SnackBarType.warning);
+    try {
+      CustomSnackBar.show(context,
+          message:
+              'No puede guardar el conteo porque faltan productos por confirmar',
+          type: SnackBarType.warning);
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _volverAPantallaAnterior() {
@@ -243,6 +244,10 @@ class _DetalleConteoAsignadoScreenState
   Widget build(BuildContext context) {
     final primaryColor = Theme.of(context).colorScheme.primary;
     final state = ref.watch(detalleConteoAsignadoProvider);
+    final buscadorState = ref.watch(detalleConteoProductosBuscadorProvider);
+
+    final (totalProductos, totalProductosPendientes) =
+        _calcularContadores(state.conteoInventario);
 
     ref.listen(detalleConteoAsignadoProvider, (previous, current) {
       if (current.conteoInventario != null &&
@@ -256,16 +261,6 @@ class _DetalleConteoAsignadoScreenState
       }
     });
 
-    if (state.conteoInventario != null) {
-      _totalProductos =
-          state.conteoInventario!.listaDetalleRecuentoInventario.length;
-      _totalProductosPendientes = state
-          .conteoInventario!.listaDetalleRecuentoInventario
-          .where((detalle) => !(detalle.esConfirmado ?? false))
-          .length;
-    }
-
-    final buscadorState = ref.watch(detalleConteoProductosBuscadorProvider);
     final productosPendientes = buscadorState.filteredList
         .where((p) => !(p.esConfirmado ?? false))
         .toList();
@@ -321,8 +316,8 @@ class _DetalleConteoAsignadoScreenState
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: CabeceraProductosWidget(
-                        cantidadPendientes: _totalProductosPendientes,
-                        cantidadTotal: _totalProductos,
+                        cantidadPendientes: totalProductosPendientes,
+                        cantidadTotal: totalProductos,
                         mostrandoContados: state.mostrarContados,
                         onToggleVista: _toggleVista,
                         filtroActivo: state.filtroActivo,
@@ -355,10 +350,7 @@ class _DetalleConteoAsignadoScreenState
                       hintText: 'Buscar por nombre, código o ubicación',
                       formatCount: (found, total) =>
                           _formatearResultadoBusqueda(
-                        ref
-                            .read(detalleConteoProductosBuscadorProvider)
-                            .filteredList,
-                      ),
+                              buscadorState.filteredList),
                     ),
                     const SizedBox(height: 8),
                   ],
@@ -368,63 +360,8 @@ class _DetalleConteoAsignadoScreenState
                       ? const Center(
                           child: CircularProgressIndicator(),
                         )
-                      : (state.mostrarContados
-                              ? productosContados.isEmpty
-                              : productosPendientes.isEmpty)
-                          ? Center(
-                              child: Text(
-                                state.mostrarContados
-                                    ? 'No hay productos contados'
-                                    : 'No hay productos pendientes por contar',
-                                style: const TextStyle(
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            )
-                          : ListView.builder(
-                              controller: _scrollController,
-                              padding: const EdgeInsets.only(bottom: 80),
-                              itemCount: state.mostrarContados
-                                  ? productosContados.length
-                                  : productosPendientes.length,
-                              itemBuilder: (context, index) {
-                                final detalleProducto = state.mostrarContados
-                                    ? productosContados[index]
-                                    : productosPendientes[index];
-
-                                return CustomProductCard(
-                                  detalleRecuentoInventario: detalleProducto,
-                                  // onTap: () {
-                                  //   DialogoDetalleConteoHelper
-                                  //       .mostrarContarProducto(
-                                  //     context: context,
-                                  //     ref: ref,
-                                  //     detalleConteo: detalleProducto,
-                                  //   );
-                                  // },
-                                  onTap: (tieneLotes) {
-                                    DialogoDetalleConteoHelper
-                                        .mostrarContarProducto(
-                                      context: context,
-                                      ref: ref,
-                                      detalleConteo: detalleProducto,
-                                    );
-                                  },
-                                  showCheckbox: false,
-                                  isSelected:
-                                      detalleProducto.esConfirmado ?? false,
-                                  // onTapLotes: () {
-                                  //   DialogoDetalleConteoHelper
-                                  //       .mostrarContarProducto(
-                                  //           context: context,
-                                  //           ref: ref,
-                                  //           detalleConteo: detalleProducto);
-                                  // },
-                                );
-                              },
-                            ),
+                      : _buildProductList(
+                          state, productosPendientes, productosContados),
                 ),
               ],
             ),
@@ -436,6 +373,56 @@ class _DetalleConteoAsignadoScreenState
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildProductList(
+    DetalleConteoAsignadoState state,
+    List<DetalleRecuentoInventario> productosPendientes,
+    List<DetalleRecuentoInventario> productosContados,
+  ) {
+    final productosAMostrar =
+        state.mostrarContados ? productosContados : productosPendientes;
+
+    if (productosAMostrar.isEmpty) {
+      return Center(
+        child: Text(
+          state.mostrarContados
+              ? 'No hay productos contados'
+              : 'No hay productos pendientes por contar',
+          style: const TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      controller: _scrollController,
+      padding: const EdgeInsets.only(bottom: 80),
+      itemCount: productosAMostrar.length,
+      itemBuilder: (context, index) {
+        final detalleProducto = productosAMostrar[index];
+
+        final key = Key(
+            '${detalleProducto.codigoProducto}_${detalleProducto.codigoLote ?? 'sin_lote'}_$index');
+
+        return CustomProductCard(
+          key: key,
+          producto: detalleProducto.producto,
+          onTap: (tieneLotes) {
+            DialogoDetalleConteoHelper.mostrarContarProducto(
+              context: context,
+              ref: ref,
+              detalleConteo: detalleProducto,
+            );
+          },
+          showCheckbox: false,
+          isSelected: detalleProducto.esConfirmado ?? false,
+        );
+      },
     );
   }
 

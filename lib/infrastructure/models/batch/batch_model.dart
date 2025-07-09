@@ -9,7 +9,8 @@ class BatchModel with _$BatchModel {
   factory BatchModel({
     required String code,
     required DateTime expirationDate,
-    required double stock
+    required double stock,
+    required double quantity
   }) = _BatchModel;
 
   factory BatchModel.fromJson(Map<String, Object?> json) =>

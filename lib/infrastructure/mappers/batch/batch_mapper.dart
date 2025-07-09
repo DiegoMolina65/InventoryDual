@@ -6,13 +6,15 @@ class BatchMapper {
     return LotesEntidad(
         codigo: batchModel.code,
         fechaExpiracion: batchModel.expirationDate,
-        stock: batchModel.stock);
+        stock: batchModel.stock,
+        cantidad: batchModel.quantity);
   }
 
   static BatchModel mapearALote(LotesEntidad loteEntidad) {
     return BatchModel(
         code: loteEntidad.codigo,
         expirationDate: loteEntidad.fechaExpiracion,
-        stock: loteEntidad.stock);
+        stock: loteEntidad.stock,
+        quantity: loteEntidad.cantidad);
   }
 }

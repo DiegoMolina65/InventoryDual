@@ -2,8 +2,6 @@ import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detall
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
 import 'package:m_dual_inventario/domain/entities/conteo/conteo_detalle/conteo_detalle.dart';
 import 'package:m_dual_inventario/domain/entities/conteo/conteo_imagen/conteo_imagen.dart';
-import 'package:m_dual_inventario/domain/entities/lotes/lotes.dart';
-import 'package:m_dual_inventario/infrastructure/mappers/batch/batch_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/search_inventory_take/producto_mapper/producto_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/count/conteo_detalle_mapper/conteo_detalle_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/count/conteo_imagen_mapper/conteo_imagen_mapper.dart';
@@ -35,10 +33,10 @@ class DetalleRecuentoInventarioMapper {
           .toList();
     }
 
-    List<LotesEntidad> listaLotes = detailModel.lstBatch
-            ?.map((batch) => BatchMapper.mapearLote(batch))
-            .toList() ??
-        [];
+    // List<LotesEntidad> listaLotes = detailModel.lstBatch
+    //         ?.map((batch) => BatchMapper.mapearLote(batch))
+    //         .toList() ??
+    //     [];
 
     return DetalleRecuentoInventario(
       codigoConteoInventario: detailModel.codeCountInventory,
@@ -56,7 +54,7 @@ class DetalleRecuentoInventarioMapper {
       codigoLote: detailModel.codeBatch,
       producto: producto,
       listaImagenConteo: listaImagenConteo,
-      listaLotes: listaLotes,
+      // listaLotes: listaLotes,
       listaDetalleConteo: listaDetalleConteo,
       umBase: detailModel.umBase,
       umLow: detailModel.umLow,
@@ -84,11 +82,10 @@ class DetalleRecuentoInventarioMapper {
           .toList();
     }
 
-    // SOLO LECTURA
-    final listaLotes = detalleRecuentoInventario.listaLotes
-            ?.map((lote) => BatchMapper.mapearALote(lote))
-            .toList() ??
-        [];
+    // final listaLotes = detalleRecuentoInventario.listaLotes
+    //         ?.map((lote) => BatchMapper.mapearALote(lote))
+    //         .toList() ??
+    //     [];
 
     return CountInventoryDetailModel(
       codeCountInventory: detalleRecuentoInventario.codigoConteoInventario,
@@ -106,7 +103,7 @@ class DetalleRecuentoInventarioMapper {
       codeBatch: detalleRecuentoInventario.codigoLote,
       product:
           producto != null ? ProductoMapper.mapearAProducto(producto) : null,
-      lstBatch: listaLotes,
+      // lstBatch: listaLotes,
       listImageCount: listaConteoImagen,
       listDetailCount: listaConteoDetalle,
       umBase: detalleRecuentoInventario.umBase,

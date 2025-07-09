@@ -6,7 +6,6 @@ import 'package:m_dual_inventario/config/constant/key_app_preferences.dart';
 import 'package:m_dual_inventario/domain/entities/almacen_por_local/almacen_x_local.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/conteo_inventario/conteo_inventario.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detalle_recuento_inventario/detalle_recuento_inventario.dart';
-import 'package:m_dual_inventario/domain/entities/lotes/lotes.dart';
 import 'package:m_dual_inventario/domain/entities/tomas_inv_almacen/toma_inventario.dart';
 import 'package:m_dual_inventario/domain/entities/obtener_datos/obtener_datos/obtener_datos.dart';
 import 'package:m_dual_inventario/domain/entities/usuario/usuario.dart';
@@ -19,7 +18,6 @@ import 'package:m_dual_inventario/infrastructure/mappers/configuration_data/unit
 import 'package:m_dual_inventario/infrastructure/mappers/configuration_data/warehouse_mapper/warehouse_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/inventory_take/tomas_inventario_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/login/usuario_mapper.dart';
-import 'package:m_dual_inventario/infrastructure/models/batch/batch_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/local_warehouse/almacen_x_local_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/count_inventory_model/count_inventory_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/product_model/product_model.dart';
@@ -305,8 +303,30 @@ class ApiCliente extends DioClientService {
 
   Future<int> guardarConteoInventario(ConteoInventario conteoInventario) async {
     try {
-      final model =
-          ConteoInventarioMapper.mapearAConteoInventario(conteoInventario);
+      // Modificar detalle al formato admitido por el servicio
+      List<DetalleRecuentoInventario> nuevaListaDetalle = [];
+      for (var detalle in conteoInventario.listaDetalleRecuentoInventario) {
+        bool tieneLote = detalle.producto?.listaLotes?.isNotEmpty ?? false;
+
+        if (!tieneLote) {
+          // El detalle no tiene lote
+          nuevaListaDetalle.add(detalle);
+          continue;
+        }
+
+        // El detalle tiene lote
+        // Recorre la lista de lotes
+        for (var lote in detalle.producto!.listaLotes!) {
+          final nuevoDetalle = detalle.copyWith(
+              codigoLote: lote.codigo,
+              cantidadStock: lote.stock,
+              cantidadConteo: lote.cantidad);
+          nuevaListaDetalle.add(nuevoDetalle);
+        }
+      }
+      final model = ConteoInventarioMapper.mapearAConteoInventario(
+          conteoInventario.copyWith(
+              listaDetalleRecuentoInventario: nuevaListaDetalle));
       final response = await post<Map<String, dynamic>>(
         'conteoInventario',
         data: jsonEncode(model.toJson()),
@@ -334,7 +354,7 @@ class ApiCliente extends DioClientService {
       final fechaFormateada = fechaActualizacion.getStringFormat('yyyy-MM-dd');
 
       final response = await get(
-        'conteoInventario/listarConteosAsignados',
+        'conteoInventario/listarConteosAsignados2',
         queryParameters: {
           'pCalm': codigoAlmacen.toString(),
           'pCusr': codigoUsuario.toString(),
@@ -352,55 +372,55 @@ class ApiCliente extends DioClientService {
               ))
           .toList();
 
-      final conteos2 = conteos.map(
-        (conteo) {
-          if (conteo.codigo >= 18) {
-            final listaDetalle = conteo.listaDetalleRecuentoInventario;
-            List<DetalleRecuentoInventario> nuevoDetalle = [];
-            for (DetalleRecuentoInventario item in listaDetalle) {
-              if (item.codigoLote == null || item.codigoLote!.isEmpty) {
-                // Si no tiene lote agregamos el detalle a la nueva lista
-                nuevoDetalle.add(item);
-                continue;
-              }
-              // tiene lote, procesamos para agrupar
-              DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
-                  .where(
-                    (element) => element.codigoProducto == item.codigoProducto,
-                  )
-                  .firstOrNull;
-              detalleAgrupado ??= item.copyWith();
+      // final conteos2 = conteos.map(
+      //   (conteo) {
+      //     if (conteo.codigo == 15) {
+      //       final listaDetalle = conteo.listaDetalleRecuentoInventario;
+      //       List<DetalleRecuentoInventario> nuevoDetalle = [];
+      //       for (DetalleRecuentoInventario item in listaDetalle) {
+      //         if (item.codigoLote == null || item.codigoLote!.isEmpty) {
+      //           // Si no tiene lote agregamos el detalle a la nueva lista
+      //           nuevoDetalle.add(item);
+      //           continue;
+      //         }
+      //         // tiene lote, procesamos para agrupar
+      //         DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
+      //             .where(
+      //               (element) => element.codigoProducto == item.codigoProducto,
+      //             )
+      //             .firstOrNull;
+      //         detalleAgrupado ??= item.copyWith();
 
-              List<LotesEntidad> nuevaListadeLotes = [
-                ...(detalleAgrupado.listaLotes ?? [])
-              ];
+      //         List<LotesEntidad> nuevaListadeLotes = [
+      //           ...(detalleAgrupado.listaLotes ?? [])
+      //         ];
 
-              LotesEntidad nuevoLote = LotesEntidad(
-                  codigo: item.codigoLote!,
-                  fechaExpiracion: DateTime.now(),
-                  stock: item.cantidadStock);
-              nuevaListadeLotes.add(nuevoLote);
-              detalleAgrupado =
-                  detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
+      //         LotesEntidad nuevoLote = LotesEntidad(
+      //             codigo: item.codigoLote!,
+      //             fechaExpiracion: DateTime.now(),
+      //             stock: item.cantidadStock);
+      //         nuevaListadeLotes.add(nuevoLote);
+      //         detalleAgrupado =
+      //             detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
 
-              nuevoDetalle = [
-                ...nuevoDetalle
-                    .where(
-                      (det) =>
-                          det.codigoProducto != detalleAgrupado!.codigoProducto,
-                    )
-                    .toList(),
-                detalleAgrupado
-              ];
-              // nuevoDetalle.add(detalleAgrupado);
-            }
-            return conteo.copyWith(
-                listaDetalleRecuentoInventario: nuevoDetalle);
-          }
-          return conteo;
-        },
-      ).toList();
-      return conteos2;
+      //         nuevoDetalle = [
+      //           ...nuevoDetalle
+      //               .where(
+      //                 (det) =>
+      //                     det.codigoProducto != detalleAgrupado!.codigoProducto,
+      //               )
+      //               .toList(),
+      //           detalleAgrupado
+      //         ];
+      //         // nuevoDetalle.add(detalleAgrupado);
+      //       }
+      //       return conteo.copyWith(
+      //           listaDetalleRecuentoInventario: nuevoDetalle);
+      //     }
+      //     return conteo;
+      //   },
+      // ).toList();
+      return conteos;
     } catch (e) {
       rethrow;
     }
@@ -431,7 +451,7 @@ class ApiCliente extends DioClientService {
       int codigoConteoInventario) async {
     try {
       final response = await post<Map<String, dynamic>>(
-        'actualizarStockConteo',
+        'actualizarStockConteo2',
         data: codigoConteoInventario,
         options: Options(
           headers: {
@@ -445,51 +465,51 @@ class ApiCliente extends DioClientService {
         CountInventoryModel.fromJson(response.data!),
       );
 
-      final ConteoInventario conteo2;
+      // final ConteoInventario conteo2;
 
-      if (conteo.codigo >= 18) {
-        final listaDetalle = conteo.listaDetalleRecuentoInventario;
-        List<DetalleRecuentoInventario> nuevoDetalle = [];
-        for (DetalleRecuentoInventario item in listaDetalle) {
-          if (item.codigoLote == null || item.codigoLote!.isEmpty) {
-            // Si no tiene lote agregamos el detalle a la nueva lista
-            nuevoDetalle.add(item);
-            continue;
-          }
-          // tiene lote, procesamos para agrupar
-          DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
-              .where(
-                (element) => element.codigoProducto == item.codigoProducto,
-              )
-              .firstOrNull;
-          detalleAgrupado ??= item.copyWith();
+      // if (conteo.codigo == 15) {
+      //   final listaDetalle = conteo.listaDetalleRecuentoInventario;
+      //   List<DetalleRecuentoInventario> nuevoDetalle = [];
+      //   for (DetalleRecuentoInventario item in listaDetalle) {
+      //     if (item.codigoLote == null || item.codigoLote!.isEmpty) {
+      //       // Si no tiene lote agregamos el detalle a la nueva lista
+      //       nuevoDetalle.add(item);
+      //       continue;
+      //     }
+      //     // tiene lote, procesamos para agrupar
+      //     DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
+      //         .where(
+      //           (element) => element.codigoProducto == item.codigoProducto,
+      //         )
+      //         .firstOrNull;
+      //     detalleAgrupado ??= item.copyWith();
 
-          List<LotesEntidad> nuevaListadeLotes = [
-            ...(detalleAgrupado.listaLotes ?? [])
-          ];
+      //     List<LotesEntidad> nuevaListadeLotes = [
+      //       ...(detalleAgrupado.listaLotes ?? [])
+      //     ];
 
-          LotesEntidad nuevoLote = LotesEntidad(
-              codigo: item.codigoLote!,
-              fechaExpiracion: DateTime.now(),
-              stock: item.cantidadStock);
-          nuevaListadeLotes.add(nuevoLote);
-          detalleAgrupado =
-              detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
+      //     LotesEntidad nuevoLote = LotesEntidad(
+      //         codigo: item.codigoLote!,
+      //         fechaExpiracion: DateTime.now(),
+      //         stock: item.cantidadStock);
+      //     nuevaListadeLotes.add(nuevoLote);
+      //     detalleAgrupado =
+      //         detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
 
-          nuevoDetalle = [
-            ...nuevoDetalle.where(
-              (det) => det.codigoProducto != detalleAgrupado!.codigoProducto,
-            ),
-            detalleAgrupado
-          ];
-          // nuevoDetalle.add(detalleAgrupado);
-        }
-        conteo2 = conteo.copyWith(listaDetalleRecuentoInventario: nuevoDetalle);
-      } else {
-        conteo2 = conteo;
-      }
+      //     nuevoDetalle = [
+      //       ...nuevoDetalle.where(
+      //         (det) => det.codigoProducto != detalleAgrupado!.codigoProducto,
+      //       ),
+      //       detalleAgrupado
+      //     ];
+      //     // nuevoDetalle.add(detalleAgrupado);
+      //   }
+      //   conteo2 = conteo.copyWith(listaDetalleRecuentoInventario: nuevoDetalle);
+      // } else {
+      //   conteo2 = conteo;
+      // }
 
-      return conteo2;
+      return conteo;
     } catch (e) {
       rethrow;
     }

@@ -10,7 +10,8 @@ class LotesEntidad with _$LotesEntidad {
   factory LotesEntidad({
       required String codigo,
       @JsonKey(name: 'fecha_expiracion') required DateTime fechaExpiracion,
-      required double stock
+      required double stock,
+      required double cantidad
     }) = _LotesEntidad;
 
   factory LotesEntidad.fromJson(Map<String, Object?> json) =>

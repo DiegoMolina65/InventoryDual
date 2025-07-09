@@ -26,7 +26,7 @@ class CountInventoryDetailModel with _$CountInventoryDetailModel {
     required DateTime dateCount,
     required ProductModel? product,
     String? codeBatch,
-    List<BatchModel>? lstBatch,
+    // List<BatchModel>? lstBatch,
     required List<ImageCountModel>? listImageCount,
     required List<DetailCountModel>? listDetailCount,
     @JsonKey(ignore: true) UnitMeasureModel? umBase,

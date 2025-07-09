@@ -45,9 +45,8 @@ mixin _$DetalleRecuentoInventario {
   @JsonKey(name: 'fecha_conteo')
   DateTime get fechaConteo => throw _privateConstructorUsedError;
   String? get codigoLote => throw _privateConstructorUsedError;
-  Producto? get producto => throw _privateConstructorUsedError;
-  List<LotesEntidad>? get listaLotes =>
-      throw _privateConstructorUsedError; // SOLO LECTURA
+  Producto? get producto =>
+      throw _privateConstructorUsedError; // List<LotesEntidad>? listaLotes, // SOLO LECTURA
   @JsonKey(name: 'lista_imagen_conteo')
   List<ConteoImagen>? get listaImagenConteo =>
       throw _privateConstructorUsedError;
@@ -90,7 +89,6 @@ abstract class $DetalleRecuentoInventarioCopyWith<$Res> {
       @JsonKey(name: 'fecha_conteo') DateTime fechaConteo,
       String? codigoLote,
       Producto? producto,
-      List<LotesEntidad>? listaLotes,
       @JsonKey(name: 'lista_imagen_conteo')
       List<ConteoImagen>? listaImagenConteo,
       @JsonKey(name: 'lista_detalle_conteo')
@@ -133,7 +131,6 @@ class _$DetalleRecuentoInventarioCopyWithImpl<$Res,
     Object? fechaConteo = null,
     Object? codigoLote = freezed,
     Object? producto = freezed,
-    Object? listaLotes = freezed,
     Object? listaImagenConteo = freezed,
     Object? listaDetalleConteo = freezed,
     Object? umBase = freezed,
@@ -198,10 +195,6 @@ class _$DetalleRecuentoInventarioCopyWithImpl<$Res,
           ? _value.producto
           : producto // ignore: cast_nullable_to_non_nullable
               as Producto?,
-      listaLotes: freezed == listaLotes
-          ? _value.listaLotes
-          : listaLotes // ignore: cast_nullable_to_non_nullable
-              as List<LotesEntidad>?,
       listaImagenConteo: freezed == listaImagenConteo
           ? _value.listaImagenConteo
           : listaImagenConteo // ignore: cast_nullable_to_non_nullable
@@ -290,7 +283,6 @@ abstract class _$$DetalleRecuentoInventarioImplCopyWith<$Res>
       @JsonKey(name: 'fecha_conteo') DateTime fechaConteo,
       String? codigoLote,
       Producto? producto,
-      List<LotesEntidad>? listaLotes,
       @JsonKey(name: 'lista_imagen_conteo')
       List<ConteoImagen>? listaImagenConteo,
       @JsonKey(name: 'lista_detalle_conteo')
@@ -335,7 +327,6 @@ class __$$DetalleRecuentoInventarioImplCopyWithImpl<$Res>
     Object? fechaConteo = null,
     Object? codigoLote = freezed,
     Object? producto = freezed,
-    Object? listaLotes = freezed,
     Object? listaImagenConteo = freezed,
     Object? listaDetalleConteo = freezed,
     Object? umBase = freezed,
@@ -400,10 +391,6 @@ class __$$DetalleRecuentoInventarioImplCopyWithImpl<$Res>
           ? _value.producto
           : producto // ignore: cast_nullable_to_non_nullable
               as Producto?,
-      listaLotes: freezed == listaLotes
-          ? _value._listaLotes
-          : listaLotes // ignore: cast_nullable_to_non_nullable
-              as List<LotesEntidad>?,
       listaImagenConteo: freezed == listaImagenConteo
           ? _value._listaImagenConteo
           : listaImagenConteo // ignore: cast_nullable_to_non_nullable
@@ -452,7 +439,6 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
       @JsonKey(name: 'fecha_conteo') required this.fechaConteo,
       this.codigoLote,
       required this.producto,
-      final List<LotesEntidad>? listaLotes,
       @JsonKey(name: 'lista_imagen_conteo')
       final List<ConteoImagen>? listaImagenConteo,
       @JsonKey(name: 'lista_detalle_conteo')
@@ -461,8 +447,7 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
       @JsonKey(ignore: true, name: 'um_low') this.umLow,
       @JsonKey(ignore: true, name: 'numero_conteo') this.numeroConteo,
       @JsonKey(ignore: true, name: 'es_confirmado') this.esConfirmado})
-      : _listaLotes = listaLotes,
-        _listaImagenConteo = listaImagenConteo,
+      : _listaImagenConteo = listaImagenConteo,
         _listaDetalleConteo = listaDetalleConteo;
 
   factory _$DetalleRecuentoInventarioImpl.fromJson(Map<String, dynamic> json) =>
@@ -507,19 +492,9 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
   final String? codigoLote;
   @override
   final Producto? producto;
-  final List<LotesEntidad>? _listaLotes;
-  @override
-  List<LotesEntidad>? get listaLotes {
-    final value = _listaLotes;
-    if (value == null) return null;
-    if (_listaLotes is EqualUnmodifiableListView) return _listaLotes;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(value);
-  }
-
-// SOLO LECTURA
+// List<LotesEntidad>? listaLotes, // SOLO LECTURA
   final List<ConteoImagen>? _listaImagenConteo;
-// SOLO LECTURA
+// List<LotesEntidad>? listaLotes, // SOLO LECTURA
   @override
   @JsonKey(name: 'lista_imagen_conteo')
   List<ConteoImagen>? get listaImagenConteo {
@@ -558,7 +533,7 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
 
   @override
   String toString() {
-    return 'DetalleRecuentoInventario(codigoConteoInventario: $codigoConteoInventario, codigoProducto: $codigoProducto, nombreProducto: $nombreProducto, cantidadStock: $cantidadStock, cantidadStockInicial: $cantidadStockInicial, cantidadConteo: $cantidadConteo, codigoUnidadMedida: $codigoUnidadMedida, observaciones: $observaciones, verificarUbicacion: $verificarUbicacion, ubicacionCorrecta: $ubicacionCorrecta, jsonDetalleConteo: $jsonDetalleConteo, fechaConteo: $fechaConteo, codigoLote: $codigoLote, producto: $producto, listaLotes: $listaLotes, listaImagenConteo: $listaImagenConteo, listaDetalleConteo: $listaDetalleConteo, umBase: $umBase, umLow: $umLow, numeroConteo: $numeroConteo, esConfirmado: $esConfirmado)';
+    return 'DetalleRecuentoInventario(codigoConteoInventario: $codigoConteoInventario, codigoProducto: $codigoProducto, nombreProducto: $nombreProducto, cantidadStock: $cantidadStock, cantidadStockInicial: $cantidadStockInicial, cantidadConteo: $cantidadConteo, codigoUnidadMedida: $codigoUnidadMedida, observaciones: $observaciones, verificarUbicacion: $verificarUbicacion, ubicacionCorrecta: $ubicacionCorrecta, jsonDetalleConteo: $jsonDetalleConteo, fechaConteo: $fechaConteo, codigoLote: $codigoLote, producto: $producto, listaImagenConteo: $listaImagenConteo, listaDetalleConteo: $listaDetalleConteo, umBase: $umBase, umLow: $umLow, numeroConteo: $numeroConteo, esConfirmado: $esConfirmado)';
   }
 
   @override
@@ -595,8 +570,6 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
             (identical(other.producto, producto) ||
                 other.producto == producto) &&
             const DeepCollectionEquality()
-                .equals(other._listaLotes, _listaLotes) &&
-            const DeepCollectionEquality()
                 .equals(other._listaImagenConteo, _listaImagenConteo) &&
             const DeepCollectionEquality()
                 .equals(other._listaDetalleConteo, _listaDetalleConteo) &&
@@ -626,7 +599,6 @@ class _$DetalleRecuentoInventarioImpl implements _DetalleRecuentoInventario {
         fechaConteo,
         codigoLote,
         producto,
-        const DeepCollectionEquality().hash(_listaLotes),
         const DeepCollectionEquality().hash(_listaImagenConteo),
         const DeepCollectionEquality().hash(_listaDetalleConteo),
         umBase,
@@ -672,7 +644,6 @@ abstract class _DetalleRecuentoInventario implements DetalleRecuentoInventario {
       @JsonKey(name: 'fecha_conteo') required final DateTime fechaConteo,
       final String? codigoLote,
       required final Producto? producto,
-      final List<LotesEntidad>? listaLotes,
       @JsonKey(name: 'lista_imagen_conteo')
       final List<ConteoImagen>? listaImagenConteo,
       @JsonKey(name: 'lista_detalle_conteo')
@@ -725,9 +696,7 @@ abstract class _DetalleRecuentoInventario implements DetalleRecuentoInventario {
   String? get codigoLote;
   @override
   Producto? get producto;
-  @override
-  List<LotesEntidad>? get listaLotes;
-  @override // SOLO LECTURA
+  @override // List<LotesEntidad>? listaLotes, // SOLO LECTURA
   @JsonKey(name: 'lista_imagen_conteo')
   List<ConteoImagen>? get listaImagenConteo;
   @override

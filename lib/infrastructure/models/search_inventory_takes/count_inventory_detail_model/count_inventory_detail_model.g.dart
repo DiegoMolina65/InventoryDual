@@ -25,9 +25,6 @@ _$CountInventoryDetailModelImpl _$$CountInventoryDetailModelImplFromJson(
           ? null
           : ProductModel.fromJson(json['product'] as Map<String, dynamic>),
       codeBatch: json['codeBatch'] as String?,
-      lstBatch: (json['lstBatch'] as List<dynamic>?)
-          ?.map((e) => BatchModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
       listImageCount: (json['listImageCount'] as List<dynamic>?)
           ?.map((e) => ImageCountModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -54,7 +51,6 @@ Map<String, dynamic> _$$CountInventoryDetailModelImplToJson(
       'dateCount': instance.dateCount.toIso8601String(),
       'product': instance.product,
       'codeBatch': instance.codeBatch,
-      'lstBatch': instance.lstBatch,
       'listImageCount': instance.listImageCount,
       'listDetailCount': instance.listDetailCount,
       'numberCount': instance.numberCount,

@@ -11,6 +11,7 @@ _$LotesEntidadImpl _$$LotesEntidadImplFromJson(Map<String, dynamic> json) =>
       codigo: json['codigo'] as String,
       fechaExpiracion: DateTime.parse(json['fecha_expiracion'] as String),
       stock: (json['stock'] as num).toDouble(),
+      cantidad: (json['cantidad'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$$LotesEntidadImplToJson(_$LotesEntidadImpl instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$LotesEntidadImplToJson(_$LotesEntidadImpl instance) =>
       'codigo': instance.codigo,
       'fecha_expiracion': instance.fechaExpiracion.toIso8601String(),
       'stock': instance.stock,
+      'cantidad': instance.cantidad,
     };

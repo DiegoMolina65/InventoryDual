@@ -24,6 +24,7 @@ mixin _$LotesEntidad {
   @JsonKey(name: 'fecha_expiracion')
   DateTime get fechaExpiracion => throw _privateConstructorUsedError;
   double get stock => throw _privateConstructorUsedError;
+  double get cantidad => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,7 +41,8 @@ abstract class $LotesEntidadCopyWith<$Res> {
   $Res call(
       {String codigo,
       @JsonKey(name: 'fecha_expiracion') DateTime fechaExpiracion,
-      double stock});
+      double stock,
+      double cantidad});
 }
 
 /// @nodoc
@@ -59,6 +61,7 @@ class _$LotesEntidadCopyWithImpl<$Res, $Val extends LotesEntidad>
     Object? codigo = null,
     Object? fechaExpiracion = null,
     Object? stock = null,
+    Object? cantidad = null,
   }) {
     return _then(_value.copyWith(
       codigo: null == codigo
@@ -72,6 +75,10 @@ class _$LotesEntidadCopyWithImpl<$Res, $Val extends LotesEntidad>
       stock: null == stock
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
+              as double,
+      cantidad: null == cantidad
+          ? _value.cantidad
+          : cantidad // ignore: cast_nullable_to_non_nullable
               as double,
     ) as $Val);
   }
@@ -88,7 +95,8 @@ abstract class _$$LotesEntidadImplCopyWith<$Res>
   $Res call(
       {String codigo,
       @JsonKey(name: 'fecha_expiracion') DateTime fechaExpiracion,
-      double stock});
+      double stock,
+      double cantidad});
 }
 
 /// @nodoc
@@ -105,6 +113,7 @@ class __$$LotesEntidadImplCopyWithImpl<$Res>
     Object? codigo = null,
     Object? fechaExpiracion = null,
     Object? stock = null,
+    Object? cantidad = null,
   }) {
     return _then(_$LotesEntidadImpl(
       codigo: null == codigo
@@ -119,6 +128,10 @@ class __$$LotesEntidadImplCopyWithImpl<$Res>
           ? _value.stock
           : stock // ignore: cast_nullable_to_non_nullable
               as double,
+      cantidad: null == cantidad
+          ? _value.cantidad
+          : cantidad // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -129,7 +142,8 @@ class _$LotesEntidadImpl implements _LotesEntidad {
   _$LotesEntidadImpl(
       {required this.codigo,
       @JsonKey(name: 'fecha_expiracion') required this.fechaExpiracion,
-      required this.stock});
+      required this.stock,
+      required this.cantidad});
 
   factory _$LotesEntidadImpl.fromJson(Map<String, dynamic> json) =>
       _$$LotesEntidadImplFromJson(json);
@@ -141,10 +155,12 @@ class _$LotesEntidadImpl implements _LotesEntidad {
   final DateTime fechaExpiracion;
   @override
   final double stock;
+  @override
+  final double cantidad;
 
   @override
   String toString() {
-    return 'LotesEntidad(codigo: $codigo, fechaExpiracion: $fechaExpiracion, stock: $stock)';
+    return 'LotesEntidad(codigo: $codigo, fechaExpiracion: $fechaExpiracion, stock: $stock, cantidad: $cantidad)';
   }
 
   @override
@@ -155,12 +171,15 @@ class _$LotesEntidadImpl implements _LotesEntidad {
             (identical(other.codigo, codigo) || other.codigo == codigo) &&
             (identical(other.fechaExpiracion, fechaExpiracion) ||
                 other.fechaExpiracion == fechaExpiracion) &&
-            (identical(other.stock, stock) || other.stock == stock));
+            (identical(other.stock, stock) || other.stock == stock) &&
+            (identical(other.cantidad, cantidad) ||
+                other.cantidad == cantidad));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, codigo, fechaExpiracion, stock);
+  int get hashCode =>
+      Object.hash(runtimeType, codigo, fechaExpiracion, stock, cantidad);
 
   @JsonKey(ignore: true)
   @override
@@ -181,7 +200,8 @@ abstract class _LotesEntidad implements LotesEntidad {
       {required final String codigo,
       @JsonKey(name: 'fecha_expiracion')
       required final DateTime fechaExpiracion,
-      required final double stock}) = _$LotesEntidadImpl;
+      required final double stock,
+      required final double cantidad}) = _$LotesEntidadImpl;
 
   factory _LotesEntidad.fromJson(Map<String, dynamic> json) =
       _$LotesEntidadImpl.fromJson;
@@ -193,6 +213,8 @@ abstract class _LotesEntidad implements LotesEntidad {
   DateTime get fechaExpiracion;
   @override
   double get stock;
+  @override
+  double get cantidad;
   @override
   @JsonKey(ignore: true)
   _$$LotesEntidadImplCopyWith<_$LotesEntidadImpl> get copyWith =>

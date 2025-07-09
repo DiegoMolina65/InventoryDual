@@ -11,6 +11,7 @@ _$BatchModelImpl _$$BatchModelImplFromJson(Map<String, dynamic> json) =>
       code: json['code'] as String,
       expirationDate: DateTime.parse(json['expirationDate'] as String),
       stock: (json['stock'] as num).toDouble(),
+      quantity: (json['quantity'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$$BatchModelImplToJson(_$BatchModelImpl instance) =>
@@ -18,4 +19,5 @@ Map<String, dynamic> _$$BatchModelImplToJson(_$BatchModelImpl instance) =>
       'code': instance.code,
       'expirationDate': instance.expirationDate.toIso8601String(),
       'stock': instance.stock,
+      'quantity': instance.quantity,
     };
