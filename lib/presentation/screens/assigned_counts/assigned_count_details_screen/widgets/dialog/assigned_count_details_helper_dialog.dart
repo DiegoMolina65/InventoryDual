@@ -912,7 +912,7 @@ class DialogoDetalleConteoHelper {
           ),
           SizedBox(height: 12),
           Text(
-            'Una vez finalizado, el conteo no podrá ser modificado y todos los productos pendientes serán marcados como contados automáticamente.',
+            'Una vez finalizado, todos los productos pendientes serán marcados como contados automáticamente.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,

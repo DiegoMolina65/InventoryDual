@@ -114,7 +114,7 @@ class DetalleConteoAsignadoNotifier
       codigoLote: '',
       cantidadContada: detalleProducto.cantidadConteo,
       fechaContada: DateTime.now().shortDate(),
-      sincronizadoServidor: previo?.sincronizadoServidor ?? 0,
+      sincronizadoServidor: 0,
       esConfirmado: confirmar ? 1 : (previo?.esConfirmado ?? 0),
     );
 
@@ -161,7 +161,7 @@ class DetalleConteoAsignadoNotifier
       codigoLote: codigoLote,
       cantidadContada: nuevaCantidad,
       fechaContada: DateTime.now().shortDate(),
-      sincronizadoServidor: previo?.sincronizadoServidor ?? 0,
+      sincronizadoServidor: 0,
       esConfirmado: confirmar ? 1 : (previo?.esConfirmado ?? 0),
     );
     await _repo.guardarRegistroConteoProductoLocal(reg);
@@ -256,7 +256,7 @@ class DetalleConteoAsignadoNotifier
           ));
         } else if (detalle.esConfirmado == true) {
           detallesAEnviar.add(detalle.copyWith(
-            cantidadConteo: 0.0,
+            cantidadConteo: detalle.cantidadConteo,
             fechaConteo: DateTime.now(),
             esConfirmado: true,
           ));
@@ -270,7 +270,8 @@ class DetalleConteoAsignadoNotifier
     final finalizado = c.copyWith(
       codigoAlmacen: codigoAlmacen,
       codigoUsuarioAsignado: codigoUsuario,
-      estadoConteo: "FINALIZADO",
+      estadoConteo: "CONTANDO",
+      //estadoConteo: "FINALIZADO",
       fechaFin: DateTime.now(),
       listaDetalleRecuentoInventario: detallesAEnviar,
     );
@@ -280,7 +281,7 @@ class DetalleConteoAsignadoNotifier
 
     final code = await _repo.guardarConteoInventario(finalizado);
 
-    if (code > 0) {
+    if (code > 0 && finalizado.estadoConteo == "FINALIZADO") {
       final ids = locales.map((r) => r.codigo).whereType<int>().toList();
       if (ids.isNotEmpty) {
         await _repo.marcarSincronizado(ids);

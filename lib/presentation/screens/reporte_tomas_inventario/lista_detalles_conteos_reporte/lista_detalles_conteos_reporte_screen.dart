@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_detalles_conteos_reporte/provider/lista_detalles_conteos_reporte_provider.dart';
 import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_detalles_conteos_reporte/widgets/cabecera_detalle_toma_inventario_widget.dart';
+import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_detalles_conteos_reporte/widgets/dialogs/finalizar_toma_dialogo.dart';
 import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_detalles_conteos_reporte/widgets/tabla_conteos_productos_widgets.dart';
+import 'package:m_dual_inventario/shared/widgets/export_custom_widgets.dart';
 
 class ListaDetallesConteosReporteScreen extends ConsumerStatefulWidget {
   const ListaDetallesConteosReporteScreen({
@@ -47,6 +49,11 @@ class _ListaDetallesConteosReporteScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalles de Conteos'),
+        titleTextStyle: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -65,7 +72,146 @@ class _ListaDetallesConteosReporteScreenState
         ],
       ),
       body: _buildBody(state, primaryColor),
+      floatingActionButton: state.tomaInventario != null
+          ? CustomFloatingActionButton(
+              onPressed: () => _manejarFinalizarToma(state),
+              icon: Icons.check,
+              withContainer: true,
+            )
+          : null,
     );
+  }
+
+  void _manejarFinalizarToma(ListaDetallesConteosReporteState state) async {
+    final toma = state.tomaInventario;
+
+    if (toma == null) return;
+
+    if ((toma.estado).toUpperCase() == 'FINALIZADO') {
+      CustomSnackBar.show(context,
+          message: 'La toma ya fue finalizada.', type: SnackBarType.info);
+      return;
+    }
+
+    final resultadoValidacion = _validarEstadoProductos(state);
+
+    if (!resultadoValidacion.todosCorrectos) {
+      await DialogoDetalleReporteHelper.mostrarErrorValidacion(
+        context,
+        resultadoValidacion,
+      );
+      return;
+    }
+
+    final confirmado = await DialogoDetalleReporteHelper.confirmarFinalizarToma(
+      context,
+      ref,
+    );
+
+    if (confirmado) {
+      _finalizarToma();
+    }
+  }
+
+  Future<void> _finalizarToma() async {
+    final toma = ref
+        .read(listaDetallesConteosReporteProvider(codigoTomaInventario))
+        .tomaInventario;
+
+    if (toma == null) return;
+
+    try {
+      await ref
+          .read(listaDetallesConteosReporteProvider(codigoTomaInventario)
+              .notifier)
+          .finalizarToma(toma);
+
+      if (!mounted) return;
+
+      CustomSnackBar.show(
+        context,
+        message: 'Toma de inventario finalizada correctamente',
+        type: SnackBarType.success,
+      );
+
+      await Future.delayed(const Duration(microseconds: 500));
+
+      await ref
+          .read(listaDetallesConteosReporteProvider(codigoTomaInventario)
+              .notifier)
+          .cargarTomaConResultados();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ValidationResult _validarEstadoProductos(
+      ListaDetallesConteosReporteState state) {
+    final productos = state.tomaInventario?.listaDetalleProducto ?? [];
+    int correctos = 0;
+    int conDiferencia = 0;
+    int sinConteo = 0;
+
+    for (final detalle in productos) {
+      final resultado = _calcularResultadoProducto(detalle);
+      switch (resultado.toLowerCase()) {
+        case 'correcto':
+          correctos++;
+          break;
+        case 'con diferencia':
+          conDiferencia++;
+          break;
+        case 'sin conteo':
+          sinConteo++;
+          break;
+      }
+    }
+
+    return ValidationResult(
+      totalProductos: productos.length,
+      correctos: correctos,
+      conDiferencia: conDiferencia,
+      sinConteo: sinConteo,
+      todosCorrectos: conDiferencia == 0 && sinConteo == 0 && correctos > 0,
+    );
+  }
+
+  String _calcularResultadoProducto(dynamic detalle) {
+    final conteosAgrupados = <String, List<dynamic>>{};
+
+    // Agrupar conteos por usuario
+    for (final conteo in (detalle.listaConteoResultado ?? [])) {
+      final nombreUsuario = conteo.nombreUsuario;
+      if (conteosAgrupados.containsKey(nombreUsuario)) {
+        conteosAgrupados[nombreUsuario]!.add(conteo);
+      } else {
+        conteosAgrupados[nombreUsuario] = [conteo];
+      }
+    }
+
+    if (conteosAgrupados.isEmpty) {
+      return 'Sin Conteo';
+    }
+
+    // Obtener cantidades válidas (mayores a 0)
+    final todasLasCantidades = <double>[];
+    for (final conteos in conteosAgrupados.values) {
+      for (final conteo in conteos) {
+        if (conteo.cantidadContada > 0) {
+          todasLasCantidades.add(conteo.cantidadContada);
+        }
+      }
+    }
+
+    if (todasLasCantidades.isEmpty) {
+      return 'Sin Conteo';
+    }
+
+    final primeraCantidad = todasLasCantidades.first;
+    final todasIguales =
+        todasLasCantidades.every((cantidad) => cantidad == primeraCantidad);
+
+    return todasIguales ? 'Correcto' : 'Con Diferencia';
   }
 
   Widget _buildBody(
@@ -150,7 +296,6 @@ class _ListaDetallesConteosReporteScreenState
       );
     }
 
-    // Mostrar los widgets personalizados
     return Column(
       children: [
         // Widget de cabecera

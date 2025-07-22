@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/lista_detalle_producto/lista_detalle_producto.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/list_count_results/list_count_results_mapper.dart';
@@ -40,6 +42,9 @@ class ListaDetalleProductoMapper {
       codeBatch: listaDetalleProducto.codigoLote,
       quantityVerified: listaDetalleProducto.cantidadVerificada,
       product: producto,
+      listCountResults: listaDetalleProducto.listaConteoResultado
+          ?.map((e) => ListCountResultsMapper.mapearAListaConteoResultado(e))
+          .toList(),
     );
   }
 }

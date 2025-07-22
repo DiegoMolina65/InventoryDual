@@ -1,7 +1,7 @@
 import 'package:m_dual_inventario/domain/datasource/toma_inventario/toma_inventario_datasource.dart';
 import 'package:m_dual_inventario/domain/entities/tomas_inv_almacen/toma_inventario.dart';
 import 'package:m_dual_inventario/domain/repository/toma_inventario/toma_inventario_repository.dart';
-import 'package:m_dual_inventario/infrastructure/contracts/datasource/toma_invetario/toma_inventario_datasource_impl.dart';
+import 'package:m_dual_inventario/infrastructure/contracts/datasource/toma_inventario/toma_inventario_datasource_impl.dart';
 
 class TomaInventarioRepositoryImpl extends TomaInventarioRepository {
   final TomaInventarioDatasource dataSource;
@@ -27,5 +27,10 @@ class TomaInventarioRepositoryImpl extends TomaInventarioRepository {
   @override
   Future<TomasInventario> obtenerTomaConResultados(int codigoTomaInventario) {
     return dataSource.obtenerTomaConResultados(codigoTomaInventario);
+  }
+
+  @override
+  Future<bool> finalizarToma(int codigoTomaInventario) {
+    return dataSource.finalizarToma(codigoTomaInventario);
   }
 }

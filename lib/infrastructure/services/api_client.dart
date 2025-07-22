@@ -441,52 +441,25 @@ class ApiCliente extends DioClientService {
       final conteo = ConteoInventarioMapper.mapearConteoInventario(
         CountInventoryModel.fromJson(response.data!),
       );
-
-      // final ConteoInventario conteo2;
-
-      // if (conteo.codigo == 15) {
-      //   final listaDetalle = conteo.listaDetalleRecuentoInventario;
-      //   List<DetalleRecuentoInventario> nuevoDetalle = [];
-      //   for (DetalleRecuentoInventario item in listaDetalle) {
-      //     if (item.codigoLote == null || item.codigoLote!.isEmpty) {
-      //       // Si no tiene lote agregamos el detalle a la nueva lista
-      //       nuevoDetalle.add(item);
-      //       continue;
-      //     }
-      //     // tiene lote, procesamos para agrupar
-      //     DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
-      //         .where(
-      //           (element) => element.codigoProducto == item.codigoProducto,
-      //         )
-      //         .firstOrNull;
-      //     detalleAgrupado ??= item.copyWith();
-
-      //     List<LotesEntidad> nuevaListadeLotes = [
-      //       ...(detalleAgrupado.listaLotes ?? [])
-      //     ];
-
-      //     LotesEntidad nuevoLote = LotesEntidad(
-      //         codigo: item.codigoLote!,
-      //         fechaExpiracion: DateTime.now(),
-      //         stock: item.cantidadStock);
-      //     nuevaListadeLotes.add(nuevoLote);
-      //     detalleAgrupado =
-      //         detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
-
-      //     nuevoDetalle = [
-      //       ...nuevoDetalle.where(
-      //         (det) => det.codigoProducto != detalleAgrupado!.codigoProducto,
-      //       ),
-      //       detalleAgrupado
-      //     ];
-      //     // nuevoDetalle.add(detalleAgrupado);
-      //   }
-      //   conteo2 = conteo.copyWith(listaDetalleRecuentoInventario: nuevoDetalle);
-      // } else {
-      //   conteo2 = conteo;
-      // }
-
       return conteo;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> finalizarToma(int codigoTomaInventario) async {
+    try {
+      final response = await post<bool>(
+        'tomaInventario/finalizarToma',
+        data: codigoTomaInventario,
+        options: Options(
+          headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+      return response.data ?? false;
     } catch (e) {
       rethrow;
     }

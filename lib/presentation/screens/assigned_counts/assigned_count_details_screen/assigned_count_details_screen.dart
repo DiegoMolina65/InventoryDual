@@ -624,8 +624,6 @@ class _DetalleConteoAsignadoScreenState
                                           },
                                         ),
                                       ),
-
-                                      // 👇 Texto encima
                                       const IgnorePointer(
                                         ignoring: true,
                                         child: Text(

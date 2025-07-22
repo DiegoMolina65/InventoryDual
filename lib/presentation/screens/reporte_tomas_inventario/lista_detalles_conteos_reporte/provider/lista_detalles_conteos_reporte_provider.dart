@@ -44,6 +44,9 @@ class ListaDetallesConteosReporteNotifier
     }
   }
 
+  Future<void> finalizarToma(TomasInventario tomaInventario) async {
+    await tomaInventarioRepository.finalizarToma(tomaInventario.codigo);
+  }
 }
 
 class ListaDetallesConteosReporteState {

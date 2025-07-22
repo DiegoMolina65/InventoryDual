@@ -25,4 +25,9 @@ class TomaInventarioDatasourceImpl extends TomaInventarioDatasource {
       int codigoTomaInventario) async {
     return await apicliente.obtenerTomaConResultados(codigoTomaInventario);
   }
+
+  @override
+  Future<bool> finalizarToma(int codigoTomaInventario) async {
+    return await apicliente.finalizarToma(codigoTomaInventario);
+  }
 }

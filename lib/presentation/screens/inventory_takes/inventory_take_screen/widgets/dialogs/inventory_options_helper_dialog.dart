@@ -71,33 +71,35 @@ class DialogoOpcionesTomaInventario {
           const SizedBox(height: 20),
 
           // Opciones
-          if (estado.toUpperCase() == 'PENDIENTE')
+          if (estado.toUpperCase() != 'FINALIZADO') ...[
+            if (estado.toUpperCase() == 'PENDIENTE')
+              _buildOpcion(
+                context: context,
+                icon: Icons.edit_rounded,
+                title: 'EDITAR TOMA DE INVENTARIO',
+                subtitle: 'Modifique los detalles de esta toma',
+                onTap: () async {
+                  CustomShowDialogHelper.closeShowDialogo(context);
+                  Future.microtask(() {
+                    navegarAEditarToma(context, codigoToma);
+                  });
+                },
+              ),
             _buildOpcion(
               context: context,
-              icon: Icons.edit_rounded,
-              title: 'EDITAR TOMA DE INVENTARIO',
-              subtitle: 'Modifique los detalles de esta toma',
+              icon: Icons.add_chart,
+              title: 'ASIGNAR UN NUEVO CONTEO',
+              subtitle: 'Agregue un conteo adicional a esta toma',
               onTap: () async {
                 CustomShowDialogHelper.closeShowDialogo(context);
-                Future.microtask(() {
-                  navegarAEditarToma(context, codigoToma);
-                });
+                if (!context.mounted) return;
+                DialogoCrearNuevoConteo.mostrarDialogo(
+                  context,
+                  int.parse(codigoToma),
+                );
               },
             ),
-          _buildOpcion(
-            context: context,
-            icon: Icons.add_chart,
-            title: 'ASIGNAR UN NUEVO CONTEO',
-            subtitle: 'Agregue un conteo adicional a esta toma',
-            onTap: () async {
-              CustomShowDialogHelper.closeShowDialogo(context);
-              if (!context.mounted) return;
-              DialogoCrearNuevoConteo.mostrarDialogo(
-                context,
-                int.parse(codigoToma),
-              );
-            },
-          ),
+          ],
           _buildOpcion(
             context: context,
             icon: Icons.content_copy_rounded,

@@ -46,6 +46,7 @@ class TomasInventarioMapper {
       listCountInventory: listarUltimasTomasModel.listaConteoInventario
           ?.map((e) => ConteoInventarioMapper.mapearAConteoInventario(e))
           .toList(),
+      
     );
   }
 }

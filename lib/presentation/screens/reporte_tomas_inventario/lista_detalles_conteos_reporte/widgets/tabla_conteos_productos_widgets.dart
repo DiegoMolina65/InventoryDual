@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/lista_detalle_producto/lista_detalle_producto.dart';
 import 'package:m_dual_inventario/domain/entities/lista_conteo_resultados/lista_conteo_resultados_entidad.dart';
+import 'package:m_dual_inventario/shared/helpers/extensions/number_extensions.dart';
 
 class TablaConteosProductosWidget extends StatelessWidget {
   final List<ListaDetalleProducto> listaDetalleProducto;
@@ -44,17 +45,17 @@ class TablaConteosProductosWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Resumen compacto
+          _buildResumenCompacto(),
+
+          const SizedBox(height: 16),
+
           // Lista de productos con conteos expandibles
           ...listaDetalleProducto.asMap().entries.map((entry) {
             final index = entry.key;
             final detalle = entry.value;
             return _buildProductoCard(detalle, index);
           }),
-
-          const SizedBox(height: 16),
-
-          // Resumen
-          _buildResumen(),
         ],
       ),
     );
@@ -108,7 +109,7 @@ class TablaConteosProductosWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Stock: ${detalle.stock.toStringAsFixed(0)}',
+                  'Stock: ${detalle.stock.toStringDecimal('UND')}',
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -242,87 +243,50 @@ class TablaConteosProductosWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Mostrar todos los conteos de este usuario
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: conteos.asMap().entries.map((entry) {
-              final index = entry.key;
-              final conteo = entry.value;
-              final esUltimo = index == conteos.length - 1;
+          // Mostrar todos los conteos de este usuario de forma horizontal separada
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: conteos.asMap().entries.map((entry) {
+                final conteo = entry.value;
 
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color:
-                      esUltimo ? Colors.green.shade100 : Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color:
-                        esUltimo ? Colors.green.shade300 : Colors.grey.shade300,
-                    width: esUltimo ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (esUltimo) ...[
-                      Icon(
-                        Icons.check_circle,
-                        size: 12,
-                        color: Colors.green.shade600,
-                      ),
-                      const SizedBox(width: 4),
-                    ],
-                    Text(
-                      conteo.cantidadContada.toStringAsFixed(0),
-                      style: TextStyle(
-                        fontWeight:
-                            esUltimo ? FontWeight.bold : FontWeight.w500,
-                        color: esUltimo
-                            ? Colors.green.shade700
-                            : Colors.grey.shade700,
-                        fontSize: 12,
-                      ),
+                return Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.grey.shade300,
+                      width: 1,
                     ),
-                    if (!esUltimo) ...[
-                      const SizedBox(width: 4),
+                  ),
+                  child: Column(
+                    children: [
                       Text(
-                        '#${index + 1}',
+                        'Codigo conteo: ${conteo.codigoConteoInventario}',
                         style: TextStyle(
                           fontSize: 10,
-                          color: Colors.grey.shade500,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        conteo.cantidadContada.toStringDecimal('UND'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade700,
+                          fontSize: 14,
                         ),
                       ),
                     ],
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-
-          if (conteos.length > 1) ...[
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 12,
-                  color: Colors.orange.shade600,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Último conteo válido: ${conteos.last.cantidadContada.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.orange.shade600,
-                    fontStyle: FontStyle.italic,
                   ),
-                ),
-              ],
+                );
+              }).toList(),
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -330,25 +294,25 @@ class TablaConteosProductosWidget extends StatelessWidget {
 
   Widget _buildComparacionConteos(
       Map<String, List<ListaConteoResultadosEntidad>> conteosAgrupados) {
-    if (conteosAgrupados.length < 2) {
+    if (conteosAgrupados.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.orange.shade50,
+          color: Colors.blue.shade50,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Colors.orange.shade200),
+          border: Border.all(color: Colors.blue.shade200),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.warning_amber,
-              color: Colors.orange.shade600,
+              Icons.hourglass_empty,
+              color: Colors.blue.shade600,
               size: 20,
             ),
             const SizedBox(width: 8),
             const Expanded(
               child: Text(
-                'Se requieren al menos 2 responsables para comparar',
+                'Sin conteos registrados',
                 style: TextStyle(fontSize: 12),
               ),
             ),
@@ -357,16 +321,18 @@ class TablaConteosProductosWidget extends StatelessWidget {
       );
     }
 
-    // Obtener las últimas cantidades de cada responsable
-    final cantidadesFinales = <String, double>{};
-    for (final entry in conteosAgrupados.entries) {
-      if (entry.value.isNotEmpty) {
-        cantidadesFinales[entry.key] = entry.value.last.cantidadContada;
+    // Obtener todas las cantidades de todos los conteos (cada conteo individual)
+    final todasLasCantidades = <double>[];
+    for (final conteos in conteosAgrupados.values) {
+      for (final conteo in conteos) {
+        todasLasCantidades.add(conteo.cantidadContada);
       }
     }
 
-    final todasIguales = cantidadesFinales.values.toSet().length == 1;
-    final color = todasIguales ? Colors.green : Colors.red;
+    final todasIguales = todasLasCantidades.toSet().length == 1;
+    final color = todasIguales ? Colors.green : Colors.orange;
+    final mensaje =
+        todasIguales ? 'Conteos Coinciden' : 'Conteos con Diferencia';
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -381,13 +347,13 @@ class TablaConteosProductosWidget extends StatelessWidget {
           Row(
             children: [
               Icon(
-                todasIguales ? Icons.check_circle : Icons.cancel,
+                todasIguales ? Icons.check_circle : Icons.warning,
                 color: color.shade600,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Text(
-                todasIguales ? 'Conteos Coinciden' : 'Conteos Diferentes',
+                mensaje,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: color.shade700,
@@ -397,19 +363,13 @@ class TablaConteosProductosWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 12,
-            runSpacing: 4,
-            children: cantidadesFinales.entries.map((entry) {
-              return Text(
-                '${entry.key}: ${entry.value.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: color.shade600,
-                  fontWeight: FontWeight.w500,
-                ),
-              );
-            }).toList(),
+          Text(
+            'Cantidades registradas: ${todasLasCantidades.map((c) => c.toStringAsFixed(0)).join(', ')}',
+            style: TextStyle(
+              fontSize: 12,
+              color: color.shade600,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -427,12 +387,12 @@ class TablaConteosProductosWidget extends StatelessWidget {
         textColor = Colors.green.shade700;
         icon = Icons.check_circle;
         break;
-      case 'revisar':
+      case 'con diferencia':
         backgroundColor = Colors.orange.shade100;
         textColor = Colors.orange.shade700;
         icon = Icons.warning;
         break;
-      case 'pendiente':
+      case 'sin conteo':
         backgroundColor = Colors.blue.shade100;
         textColor = Colors.blue.shade700;
         icon = Icons.hourglass_empty;
@@ -471,11 +431,11 @@ class TablaConteosProductosWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildResumen() {
+  Widget _buildResumenCompacto() {
     final totalProductos = listaDetalleProducto.length;
     int correctos = 0;
-    int revisar = 0;
-    int pendientes = 0;
+    int conDiferencia = 0;
+    int sinConteo = 0;
 
     for (final detalle in listaDetalleProducto) {
       final resultado = _calcularResultado(detalle);
@@ -483,11 +443,11 @@ class TablaConteosProductosWidget extends StatelessWidget {
         case 'correcto':
           correctos++;
           break;
-        case 'revisar':
-          revisar++;
+        case 'con diferencia':
+          conDiferencia++;
           break;
-        case 'pendiente':
-          pendientes++;
+        case 'sin conteo':
+          sinConteo++;
           break;
       }
     }
@@ -495,42 +455,42 @@ class TablaConteosProductosWidget extends StatelessWidget {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               'Resumen de Conteos',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildResumenItem(
+                _buildResumenItemCompacto(
                   'Total',
                   totalProductos.toString(),
                   Colors.blue,
                   Icons.inventory_2,
                 ),
-                _buildResumenItem(
+                _buildResumenItemCompacto(
                   'Correctos',
                   correctos.toString(),
                   Colors.green,
                   Icons.check_circle,
                 ),
-                _buildResumenItem(
-                  'A Revisar',
-                  revisar.toString(),
+                _buildResumenItemCompacto(
+                  'Con Diferencia',
+                  conDiferencia.toString(),
                   Colors.orange,
                   Icons.warning,
                 ),
-                _buildResumenItem(
-                  'Pendientes',
-                  pendientes.toString(),
+                _buildResumenItemCompacto(
+                  'Sin Conteo',
+                  sinConteo.toString(),
                   Colors.blue,
                   Icons.hourglass_empty,
                 ),
@@ -542,27 +502,27 @@ class TablaConteosProductosWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildResumenItem(
+  Widget _buildResumenItemCompacto(
       String label, String count, Color color, IconData icon) {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
             color: color,
-            size: 20,
+            size: 16,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         Text(
           count,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.bold,
             color: color,
           ),
@@ -570,7 +530,7 @@ class TablaConteosProductosWidget extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            fontSize: 11,
+            fontSize: 9,
             color: Colors.grey,
           ),
         ),
@@ -598,44 +558,39 @@ class TablaConteosProductosWidget extends StatelessWidget {
     final conteosAgrupados =
         _agruparConteosPorUsuario(detalle.listaConteoResultado ?? []);
 
-    // Si no hay conteos, está pendiente
+    // Si no hay conteos, está sin conteo
     if (conteosAgrupados.isEmpty) {
-      return 'Pendiente';
+      return 'Sin Conteo';
     }
 
-    // Si solo hay un responsable, está pendiente
-    if (conteosAgrupados.length < 2) {
-      return 'Pendiente';
-    }
-
-    // Obtener la última cantidad contada por cada responsable
-    final cantidadesFinales = <double>[];
+    // Obtener todas las cantidades de todos los conteos (cada conteo individual)
+    final todasLasCantidades = <double>[];
     for (final conteos in conteosAgrupados.values) {
-      if (conteos.isNotEmpty) {
-        cantidadesFinales.add(conteos.last.cantidadContada);
+      for (final conteo in conteos) {
+        todasLasCantidades.add(conteo.cantidadContada);
       }
     }
 
-    // Si no hay suficientes cantidades finales
-    if (cantidadesFinales.length < 2) {
-      return 'Pendiente';
+    // Si no hay cantidades
+    if (todasLasCantidades.isEmpty) {
+      return 'Sin Conteo';
     }
 
     // Verificar si todas las cantidades son iguales
-    final primeraCantidad = cantidadesFinales.first;
+    final primeraCantidad = todasLasCantidades.first;
     final todasIguales =
-        cantidadesFinales.every((cantidad) => cantidad == primeraCantidad);
+        todasLasCantidades.every((cantidad) => cantidad == primeraCantidad);
 
-    return todasIguales ? 'Correcto' : 'Revisar';
+    return todasIguales ? 'Correcto' : 'Con Diferencia';
   }
 
   Color _getResultadoColor(String resultado) {
     switch (resultado.toLowerCase()) {
       case 'correcto':
         return Colors.green;
-      case 'revisar':
+      case 'con diferencia':
         return Colors.orange;
-      case 'pendiente':
+      case 'sin conteo':
         return Colors.blue;
       default:
         return Colors.grey;
