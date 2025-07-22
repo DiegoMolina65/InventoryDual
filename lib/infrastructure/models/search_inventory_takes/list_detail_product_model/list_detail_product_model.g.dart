@@ -17,6 +17,10 @@ _$ListDetailProductModelImpl _$$ListDetailProductModelImplFromJson(
       quantityVerified: (json['quantityVerified'] as num).toDouble(),
       codeBatch: json['codeBatch'] as String?,
       product: ProductModel.fromJson(json['product'] as Map<String, dynamic>),
+      listCountResults: (json['listCountResults'] as List<dynamic>?)
+          ?.map(
+              (e) => ListCountResultsModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$ListDetailProductModelImplToJson(
@@ -30,4 +34,5 @@ Map<String, dynamic> _$$ListDetailProductModelImplToJson(
       'quantityVerified': instance.quantityVerified,
       'codeBatch': instance.codeBatch,
       'product': instance.product,
+      'listCountResults': instance.listCountResults,
     };

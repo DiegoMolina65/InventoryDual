@@ -9,7 +9,9 @@ import 'package:m_dual_inventario/shared/widgets/custom_filters/custom_filters_w
 import 'package:m_dual_inventario/shared/widgets/export_custom_widgets.dart';
 
 class TomasInventarioScreen extends ConsumerStatefulWidget {
-  const TomasInventarioScreen({super.key});
+  final Map<String, dynamic>? extra;
+
+  const TomasInventarioScreen({super.key, this.extra});
   static const name = '/tomas-inventario';
 
   @override
@@ -22,9 +24,28 @@ class _TomasInventarioScreenState extends ConsumerState<TomasInventarioScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(tomasInventarioScreenProvider.notifier).inicialiarAlmacenes();
-      ref.read(customFiltersProvider.notifier).clearAll();
+      _inicializarPantalla();
     });
+  }
+
+  void _inicializarPantalla() async {
+    try {
+      final tomasProviderNotifier =
+          ref.read(tomasInventarioScreenProvider.notifier);
+
+      int? codigoAlmacenSeleccionado;
+      if (widget.extra != null &&
+          widget.extra!['refresh'] == true &&
+          widget.extra!['almacenCodigo'] != null) {
+        codigoAlmacenSeleccionado = widget.extra!['almacenCodigo'] as int;
+      }
+
+      await tomasProviderNotifier
+          .inicialiarAlmacenes(codigoAlmacenSeleccionado);
+      ref.read(customFiltersProvider.notifier).clearAll();
+    } catch (e) {
+      print('Error al inicializar pantalla: $e');
+    }
   }
 
   @override

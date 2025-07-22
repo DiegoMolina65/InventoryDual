@@ -123,13 +123,16 @@ class _BusquedaProductoScreenState
     final primaryColor = Theme.of(context).colorScheme.primary;
     final state = ref.watch(busquedaProductoProvider);
     final notifier = ref.read(busquedaProductoProvider.notifier);
+
     ref.listen(busquedaProductoProvider, (previous, current) {
-      if (previous?.productos != current.productos) {
+      if (previous?.productos != current.productos ||
+          previous?.filtrarStockCero != current.filtrarStockCero) {
         ref
             .read(busquedaProductosBuscadorProvider.notifier)
-            .updateOriginalList(current.productos);
+            .updateOriginalList(current.productosFiltrados);
       }
     });
+
 
     final appBar = AppBar(
       backgroundColor: primaryColor,
@@ -193,6 +196,8 @@ class _BusquedaProductoScreenState
                         nombreBusqueda: state.nombreBusqueda,
                         showOnlySelected: _showOnlySelected,
                         onToggleView: _toggleShowOnlySelected,
+                        filtrarStockCero: state.filtrarStockCero,
+                        onToggleFiltroStockCero: notifier.toggleFiltroStockCero,
                       ),
                     ),
                     Padding(
@@ -268,34 +273,17 @@ class _BusquedaProductoScreenState
 
                                     final resultado =
                                         await DialogoBusquedaProductoHelper
-                                            .seleccionarLotes(context, lotes,
+                                            .seleccionarLotes(
+                                                context, ref, lotes,
                                                 lotesSeleccionados:
                                                     lotesSeleccionados);
 
                                     notifier.toggleSeleccionProductoConLotes(
                                         producto, resultado);
                                     return;
-                                  } 
+                                  }
                                   notifier.toggleSeleccionProducto(producto);
                                 },
-                                // onTap: () =>
-                                //     notifier.toggleSeleccionProducto(producto),
-                                // onTapLotes: () async {
-                                //   final lotes = producto.listaLotes!;
-
-                                //   final lotesSeleccionados =
-                                //       notifier.obtenerLotesSeleccionado(
-                                //           producto.codigo);
-
-                                //   final resultado =
-                                //       await DialogoBusquedaProductoHelper
-                                //           .seleccionarLotes(context, lotes,
-                                //               lotesSeleccionados:
-                                //                   lotesSeleccionados);
-
-                                //   notifier.toggleSeleccionProductoConLotes(
-                                //       producto, resultado);
-                                // },
                               );
                             },
                           ),

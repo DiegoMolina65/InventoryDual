@@ -7,7 +7,12 @@ import 'package:flutter/services.dart';
 enum DatePreset { today, lastWeek, lastMonth }
 
 class CustomFiltersWidget extends ConsumerStatefulWidget {
-  const CustomFiltersWidget({Key? key}) : super(key: key);
+  final bool showStatusFilter;
+  
+  const CustomFiltersWidget({
+    Key? key,
+    this.showStatusFilter = true,
+  }) : super(key: key);
 
   @override
   ConsumerState<CustomFiltersWidget> createState() =>
@@ -113,12 +118,14 @@ class _CustomFiltersWidgetState extends ConsumerState<CustomFiltersWidget> {
               ),
             ],
             const SizedBox(width: 16),
-            _StatusFilter(
-              currentStatus: filters.status,
-              onChanged: (status) =>
-                  ref.read(customFiltersProvider.notifier).setStatus(status),
-            ),
-            const SizedBox(width: 8),
+            if (widget.showStatusFilter) ...[
+              _StatusFilter(
+                currentStatus: filters.status,
+                onChanged: (status) =>
+                    ref.read(customFiltersProvider.notifier).setStatus(status),
+              ),
+              const SizedBox(width: 8),
+            ],
             _DatePresetFilter(
               startDate: filters.startDate,
               endDate: filters.endDate,
@@ -152,7 +159,7 @@ class _CustomFiltersWidgetState extends ConsumerState<CustomFiltersWidget> {
 
   bool _hasActiveFilters() {
     final filters = ref.read(customFiltersProvider);
-    return filters.status != FilterStatus.all ||
+    return (widget.showStatusFilter && filters.status != FilterStatus.all) ||
         filters.startDate != null ||
         filters.endDate != null ||
         filters.name.isNotEmpty;
@@ -183,6 +190,8 @@ class _StatusFilter extends StatelessWidget {
           width: 1.2,
         ),
       ),
+
+      // Opcional si es visible
       child: DropdownButtonHideUnderline(
         child: DropdownButton<FilterStatus>(
           value: currentStatus,

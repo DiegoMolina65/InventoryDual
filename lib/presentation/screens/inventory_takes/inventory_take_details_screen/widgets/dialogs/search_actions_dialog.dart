@@ -38,12 +38,10 @@ class DialogoBusquedaHelper {
     }
   }
 
-  static Widget construirContenidoBusqueda(
-    BuildContext context,
-    WidgetRef ref,
-    TipoBusqueda tipoBusqueda,
-    GlobalKey<FormState> formKey,
-  ) {
+  static Widget construirContenidoBusqueda(BuildContext context, WidgetRef ref,
+      TipoBusqueda tipoBusqueda, GlobalKey<FormState> formKey,
+      {BuildContext Function()? getContext = null,
+      WidgetRef Function()? getRef = null}) {
     final state = ref.watch(detalleTomaInventarioProvider);
     final notifier = ref.read(detalleTomaInventarioProvider.notifier);
     final primaryColor = Theme.of(context).colorScheme.primary;
@@ -55,14 +53,8 @@ class DialogoBusquedaHelper {
         _getIconoTipoBusqueda(tipoBusqueda),
         const SizedBox(height: 20),
         _getContenidoPorTipoBusqueda(
-          context,
-          tipoBusqueda,
-          state,
-          notifier,
-          primaryColor,
-          ref,
-          formKey,
-        ),
+            context, tipoBusqueda, state, notifier, primaryColor, ref, formKey,
+            getContext: getContext, getRef: getRef),
       ],
     );
   }
@@ -98,14 +90,15 @@ class DialogoBusquedaHelper {
   }
 
   static Widget _getContenidoPorTipoBusqueda(
-    BuildContext context,
-    TipoBusqueda tipoBusqueda,
-    dynamic state,
-    dynamic notifier,
-    Color primaryColor,
-    WidgetRef ref,
-    GlobalKey<FormState> formKey,
-  ) {
+      BuildContext context,
+      TipoBusqueda tipoBusqueda,
+      dynamic state,
+      dynamic notifier,
+      Color primaryColor,
+      WidgetRef ref,
+      GlobalKey<FormState> formKey,
+      {BuildContext Function()? getContext = null,
+      WidgetRef Function()? getRef = null}) {
     switch (tipoBusqueda) {
       case TipoBusqueda.grupo:
         return Column(
@@ -234,8 +227,11 @@ class DialogoBusquedaHelper {
                       controller.textController.clear();
 
                       if (context.mounted) {
-                        CustomShowDialogHelper.closeShowDialogo(context);
-                        _realizarBusqueda(context, ref);
+                        CustomShowDialogHelper.closeShowDialogo(context)
+                            .whenComplete(
+                          () => realizarBusqueda(getContext?.call() ?? context,
+                              getRef?.call() ?? ref),
+                        );
                       }
                     }
                     return KeyEventResult.handled;
@@ -285,10 +281,8 @@ class DialogoBusquedaHelper {
       GlobalKey<FormState>();
 
   static Future<void> mostrarDialogoBusqueda(
-    BuildContext context,
-    WidgetRef ref,
-    TipoBusqueda tipoBusqueda,
-  ) async {
+      BuildContext context, WidgetRef ref, TipoBusqueda tipoBusqueda,
+      {BuildContext Function()? getContext = null, WidgetRef Function()? getRef = null}) async {
     final colorScheme = Theme.of(context).colorScheme;
 
     if (tipoBusqueda == TipoBusqueda.codigo) {
@@ -310,7 +304,8 @@ class DialogoBusquedaHelper {
           return Form(
             key: _formKeyBusquedaCodigo,
             child: construirContenidoBusqueda(
-                context, ref, tipoBusqueda, _formKeyBusquedaCodigo),
+                context, ref, tipoBusqueda, _formKeyBusquedaCodigo,
+                getContext: getContext, getRef: getRef),
           );
         },
       ),
@@ -338,7 +333,7 @@ class DialogoBusquedaHelper {
               controller.textController.clear();
 
               await CustomShowDialogHelper.closeShowDialogo(context);
-              _realizarBusqueda(context, ref);
+              realizarBusqueda(context, ref);
             }
           },
         ),
@@ -346,7 +341,7 @@ class DialogoBusquedaHelper {
     );
   }
 
-  static Future<void> _realizarBusqueda(
+  static Future<void> realizarBusqueda(
     BuildContext context,
     WidgetRef ref,
   ) async {
@@ -387,6 +382,7 @@ class DialogoBusquedaHelper {
     };
 
     try {
+      await Future.delayed(const Duration(milliseconds: 300));
       await context
           .push(
         Uri(
@@ -435,10 +431,8 @@ class DialogoBusquedaHelper {
   }
 
   static Future<void> mostrarDialogoYRealizarBusqueda(
-    BuildContext context,
-    WidgetRef ref,
-    TipoBusqueda tipoBusqueda,
-  ) async {
+      BuildContext context, WidgetRef ref, TipoBusqueda tipoBusqueda,
+      {BuildContext Function()? getContext = null, WidgetRef Function()? getRef = null}) async {
     await ref
         .read(detalleTomaInventarioProvider.notifier)
         .cargarDatosIniciales();
@@ -449,7 +443,8 @@ class DialogoBusquedaHelper {
     ref.read(busquedaProductoProvider.notifier).resetearBusqueda();
 
     if (!context.mounted) return;
-    await mostrarDialogoBusqueda(context, ref, tipoBusqueda);
+    await mostrarDialogoBusqueda(context, ref, tipoBusqueda,
+        getContext: getContext, getRef: getRef);
   }
 }
 

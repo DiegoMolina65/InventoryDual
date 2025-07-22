@@ -11,6 +11,8 @@ class EncabezadoBusquedaWidget extends StatelessWidget {
   final bool allSelected;
   final bool showOnlySelected;
   final Function() onToggleView;
+  final bool filtrarStockCero; 
+  final Function() onToggleFiltroStockCero; 
 
   const EncabezadoBusquedaWidget({
     Key? key,
@@ -23,6 +25,8 @@ class EncabezadoBusquedaWidget extends StatelessWidget {
     this.allSelected = false,
     required this.showOnlySelected,
     required this.onToggleView,
+    required this.filtrarStockCero,
+    required this.onToggleFiltroStockCero,
   }) : super(key: key);
 
   @override
@@ -90,6 +94,19 @@ class EncabezadoBusquedaWidget extends StatelessWidget {
                       allSelected ? 'Deseleccionar todos' : 'Seleccionar todos',
                   color: const Color(0xFF546E7A),
                   onTap: allSelected ? onDeselectAll : onSelectAll,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Expanded(
+                child: _ActionButton(
+                  icon: filtrarStockCero ? Icons.visibility_off : Icons.visibility,
+                  label: filtrarStockCero
+                      ? 'FILTRAR PRODUCTOS CON STOCK CERO ACTIVADO'
+                      : 'FILTRAR PRODUCTOS CON STOCK CERO DESACTIVADO',
+                  color: filtrarStockCero
+                      ? const Color(0xFF4CAF50) 
+                      : const Color(0xFFFF6F00), 
+                  onTap: onToggleFiltroStockCero,
                 ),
               ),
             ],

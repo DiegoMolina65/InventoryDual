@@ -2,23 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class CustomTextformfield extends StatefulWidget {
-  const CustomTextformfield({
-    super.key,
-    this.obscureText = false,
-    this.validator,
-    this.hintText,
-    this.onChanged,
-    this.initialValue,
-    this.upperCase = false,
-    this.controller,
-    this.value,
-    this.label,
-    this.prefixIcon,
-    this.readOnly = false,
-    this.enabled,
-    this.focusNode,
-    this.inputFormatters,
-  });
+  const CustomTextformfield(
+      {super.key,
+      this.obscureText = false,
+      this.validator,
+      this.hintText,
+      this.onChanged,
+      this.initialValue,
+      this.upperCase = false,
+      this.controller,
+      this.value,
+      this.label,
+      this.prefixIcon,
+      this.readOnly = false,
+      this.enabled,
+      this.focusNode,
+      this.inputFormatters,
+      this.keyboardType,
+      this.onFieldSubmitted});
 
   final bool obscureText;
   final String? Function(String?)? validator;
@@ -34,6 +35,8 @@ class CustomTextformfield extends StatefulWidget {
   final bool? enabled;
   final FocusNode? focusNode;
   final List<TextInputFormatter>? inputFormatters;
+  final TextInputType? keyboardType;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   State<CustomTextformfield> createState() => _CustomTextformfieldState();
@@ -69,6 +72,7 @@ class _CustomTextformfieldState extends State<CustomTextformfield> {
       readOnly: widget.readOnly,
       focusNode: widget.focusNode,
       inputFormatters: widget.inputFormatters,
+      keyboardType: widget.keyboardType,
       decoration: InputDecoration(
         labelText: widget.label,
         labelStyle: TextStyle(color: primaryColor),
@@ -107,6 +111,7 @@ class _CustomTextformfieldState extends State<CustomTextformfield> {
           widget.onChanged!(processedValue);
         }
       },
+      onFieldSubmitted: widget.onFieldSubmitted,
       enabled: widget.enabled,
       textCapitalization: widget.upperCase
           ? TextCapitalization.characters

@@ -85,7 +85,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
           .sincronizarDatosApp(usuario.codigoLocal.toString());
 
       // Sincronizar almacenesLocal
-      await almacenRepository.sincronizarDatosAlmacen(usuario.codigoLocal);
+      await almacenRepository.sincronizarDatosAlmacen(
+          usuario.codigoLocal, usuario.codigo);
 
       // Obtener version app dual inventario
       final version = await usuarioRepository.obtenerVersionDualInventario();
@@ -117,12 +118,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       usuario: usuario,
       authStatus: AuthStatus.authenticated,
-      // errorMessage: '',
-      // error: null,
     );
   }
 
-  Future<void> logout(/*[String? errorMessage, CustomError? error]*/) async {
+  Future<void> logout() async {
     await AppPreference.removeKey(KeyAppPreferences.codigoUsuario);
     await AppPreference.removeKey(KeyAppPreferences.nickUsuario);
     await AppPreference.removeKey(KeyAppPreferences.clave);
@@ -135,8 +134,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(
       authStatus: AuthStatus.notAuthenticated,
       usuario: null,
-      // errorMessage: errorMessage,
-      // error: error,
     );
   }
 }
@@ -147,23 +144,14 @@ class AuthState {
   final AuthStatus authStatus;
   final Usuario? usuario;
   final String? version;
-  // final String errorMessage;
-  // final CustomError? error;
 
-  AuthState({this.authStatus = AuthStatus.checking, this.usuario, this.version
-      // this.errorMessage = '',
-      // this.error,
-      });
+  AuthState(
+      {this.authStatus = AuthStatus.checking, this.usuario, this.version});
 
-  AuthState copyWith({AuthStatus? authStatus, Usuario? usuario, String? version
-          // String? errorMessage,
-          // CustomError? error,
-          }) =>
+  AuthState copyWith(
+          {AuthStatus? authStatus, Usuario? usuario, String? version}) =>
       AuthState(
           authStatus: authStatus ?? this.authStatus,
           usuario: usuario ?? this.usuario,
-          version: version ?? this.version
-          // errorMessage: errorMessage ?? this.errorMessage,
-          // error: error ?? this.error,
-          );
+          version: version ?? this.version);
 }

@@ -7,7 +7,7 @@ class AlmacenDatasourceImpl extends AlmacenDatasource {
 
 
   @override
-  Future<List<AlmacenXLocal>> obtenerDatosAlmacen(int codigoLocal) async {
-    return await apicliente.obtenerDatosAlmacen(codigoLocal);
+  Future<List<AlmacenXLocal>> obtenerDatosAlmacen(int codigoLocal, int codigoUsuario) async {
+    return await apicliente.obtenerDatosAlmacen(codigoLocal, codigoUsuario);
   }
 }

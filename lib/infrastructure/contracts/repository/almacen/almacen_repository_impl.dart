@@ -14,12 +14,13 @@ class AlmacenRepositoryImpl extends AlmacenRepository {
       : dataSource = dataSource ?? AlmacenDatasourceImpl(),
         dataSourcelocal = dataSourcelocal ?? AlmacenLocalDatasourceImpl();
 
-// sincronizar guardar y obtener enpoint /Almacen/listarActivosPorLocal
   @override
-  Future<bool> sincronizarDatosAlmacen(int codigoLocal) async {
+  Future<bool> sincronizarDatosAlmacen(
+      int codigoLocal, int codigoUsuario) async {
     try {
       // Obtener los datos desde la API
-      final obtenerDatos = await dataSource.obtenerDatosAlmacen(codigoLocal);
+      final obtenerDatos =
+          await dataSource.obtenerDatosAlmacen(codigoLocal, codigoUsuario);
 
       // Guardar los datos en la base local
       return await dataSourcelocal.guardarDatosAlmacen(obtenerDatos);
@@ -29,9 +30,18 @@ class AlmacenRepositoryImpl extends AlmacenRepository {
   }
 
   @override
-  Future<List<AlmacenXLocal>> obtenerAlmacenesPorLocal() async {
+  Future<List<AlmacenXLocal>> obtenerAlmacenesPorLocal(
+      {bool incluirOpcionTodos = false}) async {
     try {
-      return await dataSourcelocal.obtenerAlmacenesPorLocal();
+      List<AlmacenXLocal> listaAlmacenes =
+          await dataSourcelocal.obtenerAlmacenesPorLocal();
+
+      listaAlmacenes = [
+        if (incluirOpcionTodos) AlmacenXLocal(codigo: 0, nombre: 'TODOS'),
+        ...listaAlmacenes
+      ];
+
+      return listaAlmacenes;
     } catch (e) {
       rethrow;
     }

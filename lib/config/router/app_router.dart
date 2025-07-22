@@ -5,6 +5,8 @@ import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detall
 import 'package:m_dual_inventario/domain/entities/obtener_datos/export_obtenerdatos.dart';
 import 'package:m_dual_inventario/presentation/screens/assigned_counts/assigned_count_unit_measure/assigned_count_unit_measure_screen.dart';
 import 'package:m_dual_inventario/presentation/screens/login/provider/auth_provider.dart';
+import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_detalles_conteos_reporte/lista_detalles_conteos_reporte_screen.dart';
+import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_tomas_inventario_reporte/reporte_tomas_inventario_screen.dart';
 import 'package:m_dual_inventario/presentation/screens/screens_export.dart';
 import 'package:m_dual_inventario/presentation/screens/settings/setting_screen.dart';
 import 'package:m_dual_inventario/presentation/screens/splash/splash_screen.dart';
@@ -135,6 +137,15 @@ final goRouterProvider = Provider((ref) {
         },
       ),
 
+      // Ruta para lista detalles conteos reporte
+      GoRoute(
+        path: ListaDetallesConteosReporteScreen.name,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return ListaDetallesConteosReporteScreen(parametros: extra);
+        },
+      ),
+
       // Rutas que usan el ParentScaffoldApp
       ShellRoute(
         builder: (context, state, child) {
@@ -143,15 +154,23 @@ final goRouterProvider = Provider((ref) {
         routes: [
           GoRoute(
             path: TomasInventarioScreen.name,
-            builder: (context, state) => const TomasInventarioScreen(),
+            builder: (context, state) => TomasInventarioScreen(
+              extra: state.extra as Map<String, dynamic>?,
+            ),
           ),
           GoRoute(
             path: ConteosAsignadosScreen.name,
             builder: (context, state) => const ConteosAsignadosScreen(),
+          ),
+          GoRoute(
+            path: ReporteTomasInventarioScreen.name,
+            builder: (context, state) => const ReporteTomasInventarioScreen(),
           )
         ],
       ),
     ],
+
+    // LOGIN
     redirect: (context, state) async {
       final isGoingTo = state.matchedLocation;
       final authStatus = goRouterNotifier.authStatus;
@@ -161,7 +180,8 @@ final goRouterProvider = Provider((ref) {
       }
 
       if (authStatus == AuthStatus.notAuthenticated) {
-        if (isGoingTo == LoginScreen.name || isGoingTo == SettingScreen.name) return null;
+        if (isGoingTo == LoginScreen.name || isGoingTo == SettingScreen.name)
+          return null;
 
         return LoginScreen.name;
       }
@@ -169,7 +189,7 @@ final goRouterProvider = Provider((ref) {
       if (authStatus == AuthStatus.authenticated) {
         if (isGoingTo == LoginScreen.name /*|| isGoingTo == '/register'*/) {
           /// Si no es las anteriores mandamos al menu principal
-          return TomasInventarioScreen.name;
+          return ConteosAsignadosScreen.name;
         }
       }
 

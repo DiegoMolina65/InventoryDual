@@ -125,7 +125,7 @@ class _DetalleTomaInventarioScreenState
   Future<void> _salirSinGuardar() async {
     final salir =
         await DialogoDetalleTomaInventarioHelper.confirmarSalida(context);
-
+    
     if (!mounted || !salir) return;
     ref
         .read(detalleTomaInventarioProvider.notifier)

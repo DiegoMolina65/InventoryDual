@@ -324,7 +324,7 @@ class DetalleConteoAsignadoNotifier
             reg.codigoConteo == c.codigo &&
             reg.codigoProducto == d.codigoProducto &&
             reg.codigoLote != null &&
-            reg.codigoLote!.isNotEmpty);
+            reg.codigoLote.isNotEmpty);
 
         if (localBatchRecordsForProduct.isNotEmpty) {
           productoEsConfirmado =
@@ -338,7 +338,7 @@ class DetalleConteoAsignadoNotifier
         return d.copyWith(
           producto: d.producto!.copyWith(listaLotes: lotesConteoRestaurado),
           cantidadConteo: cantidadTotalContada,
-          fechaConteo: DateTime.now(),
+          fechaConteo: d.fechaConteo,
           esConfirmado: productoEsConfirmado,
         );
       } else {

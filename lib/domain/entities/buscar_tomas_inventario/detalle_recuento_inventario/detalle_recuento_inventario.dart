@@ -4,7 +4,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
 import 'package:m_dual_inventario/domain/entities/conteo/conteo_detalle/conteo_detalle.dart';
 import 'package:m_dual_inventario/domain/entities/conteo/conteo_imagen/conteo_imagen.dart';
-import 'package:m_dual_inventario/domain/entities/lotes/lotes.dart';
 import 'package:m_dual_inventario/infrastructure/models/configuration_data/unit_measure_model/unit_measure_model.dart';
 
 part 'detalle_recuento_inventario.freezed.dart';

@@ -5,6 +5,7 @@ import 'package:m_dual_inventario/presentation/screens/assigned_counts/assigned_
 import 'package:m_dual_inventario/presentation/screens/assigned_counts/assigned_counts_screen/provider/assigned_counts_provider.dart';
 import 'package:m_dual_inventario/presentation/screens/inventory_takes/inventory_take_screen/provider/inventory_screen_provider.dart';
 import 'package:m_dual_inventario/presentation/screens/inventory_takes/inventory_take_screen/inventory_take_screen.dart';
+import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_tomas_inventario_reporte/reporte_tomas_inventario_screen.dart';
 
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -21,6 +22,8 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       return 'Listado de Tomas de Inventario';
     } else if (location.startsWith(ConteosAsignadosScreen.name)) {
       return 'Listado de Conteos Asignados';
+    } else if (location.startsWith(ReporteTomasInventarioScreen.name)) {
+      return 'Reporte Tomas de inventario';
     }
 
     return 'M_DUAL_INVENTARIO';

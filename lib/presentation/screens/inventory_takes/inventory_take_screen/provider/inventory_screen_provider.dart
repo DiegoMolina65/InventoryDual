@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:m_dual_inventario/config/constant/key_app_preferences.dart';
 import 'package:m_dual_inventario/domain/entities/almacen_por_local/almacen_x_local.dart';
 import 'package:m_dual_inventario/domain/entities/almacen_resumen_tomas/almacen_resumen_tomas.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/conteo_inventario/conteo_inventario.dart';
@@ -16,6 +17,7 @@ import 'package:m_dual_inventario/infrastructure/contracts/providers/usuario/usu
 import 'package:m_dual_inventario/infrastructure/mappers/search_inventory_take/detalle_recuento_inventario_mapper/detalle_recuento_inventario_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/search_inventory_take/lista_detalle_producto_mapper/lista_detalle_producto_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/count_inventory_detail_model/count_inventory_detail_model.dart';
+import 'package:m_dual_inventario/shared/app_preferences.dart';
 
 final tomasInventarioScreenProvider =
     StateNotifierProvider<TomasInventarioNotifier, TomasInventarioState>((ref) {
@@ -46,8 +48,8 @@ class TomasInventarioNotifier extends StateNotifier<TomasInventarioState> {
     required this.conteoRepository,
   }) : super(TomasInventarioState());
 
-  void inicialiarAlmacenes() {
-    Future.microtask(() => cargarAlmacenes());
+  Future<void> inicialiarAlmacenes([int? codigoAlmacenSeleccionado]) async {
+    await cargarAlmacenes(codigoAlmacenSeleccionado);
   }
 
   List<AlmacenResumenTomas> obtenerResumenesPorAlmacen({
@@ -55,8 +57,16 @@ class TomasInventarioNotifier extends StateNotifier<TomasInventarioState> {
     required List<TomasInventario> tomas,
   }) {
     return almacenes.map((almacen) {
-      final tomasFiltradas =
-          tomas.where((t) => t.codigoAlmacen == almacen.codigo);
+      late final Iterable<TomasInventario> tomasFiltradas;
+
+      if (almacen.codigo == 0) {
+        // Almacen "TODOS": no filtrar
+        tomasFiltradas = tomas;
+      } else {
+        // Almacen normal
+        tomasFiltradas = tomas.where((t) => t.codigoAlmacen == almacen.codigo);
+      }
+
       final pendientes =
           tomasFiltradas.where((t) => t.estado == 'PENDIENTE').length;
       final contando =
@@ -73,31 +83,94 @@ class TomasInventarioNotifier extends StateNotifier<TomasInventarioState> {
     }).toList();
   }
 
-  Future<void> cargarAlmacenes() async {
+  Future<void> cargarAlmacenes([int? codigoAlmacenSeleccionado]) async {
     try {
       state = state.copyWith(isLoadingAlmacenes: true);
-      final almacenes = await almacenRepository.obtenerAlmacenesPorLocal();
+      final codigoUsuario =
+          await AppPreference.getValue<int>(KeyAppPreferences.codigoUsuario);
+      bool esSupervisor =
+          (await usuarioRepository.obtenerUsuarioLocal(codigoUsuario ?? 0))
+                  ?.esSupervisor ??
+              false;
+      final almacenes = await almacenRepository.obtenerAlmacenesPorLocal(
+          incluirOpcionTodos: esSupervisor);
 
       if (almacenes.isNotEmpty) {
+        AlmacenXLocal almacenASeleccionar;
+        if (codigoAlmacenSeleccionado != null) {
+          // Caso 1: Se pasó un código específico
+          try {
+            almacenASeleccionar = almacenes.firstWhere(
+              (almacen) => almacen.codigo == codigoAlmacenSeleccionado,
+            );
+          } catch (e) {
+            if (state.almacenSeleccionado != null) {
+              try {
+                almacenASeleccionar = almacenes.firstWhere(
+                  (almacen) =>
+                      almacen.codigo == state.almacenSeleccionado!.codigo,
+                );
+              } catch (e) {
+                almacenASeleccionar = almacenes.first;
+              }
+            } else {
+              almacenASeleccionar = almacenes.first;
+            }
+          }
+        } else if (state.almacenSeleccionado != null) {
+          // Caso 2: Mantener el almacén que ya está seleccionado
+          try {
+            almacenASeleccionar = almacenes.firstWhere(
+              (almacen) => almacen.codigo == state.almacenSeleccionado!.codigo,
+            );
+          } catch (e) {
+            almacenASeleccionar = almacenes.first;
+          }
+        } else {
+          // Caso 3: No hay almacén seleccionado, usar el primero
+          almacenASeleccionar = almacenes.first;
+        }
+
         state = state.copyWith(
           almacenes: almacenes,
-          almacenSeleccionado: almacenes.first,
+          almacenSeleccionado: almacenASeleccionar,
           isLoadingAlmacenes: false,
         );
 
-        await cargarTomasInventario(almacenes.first.codigo);
+        await cargarTomasInventario(almacenASeleccionar.codigo);
 
         final resumenes = obtenerResumenesPorAlmacen(
           almacenes: almacenes,
           tomas: state.tomasInventario,
         );
 
+        AlmacenResumenTomas? resumenSeleccionado;
+        if (resumenes.isNotEmpty) {
+          try {
+            resumenSeleccionado = resumenes.firstWhere(
+              (resumen) => resumen.almacen.codigo == almacenASeleccionar.codigo,
+            );
+          } catch (e) {
+            resumenSeleccionado = resumenes.first;
+          }
+        }
+
         state = state.copyWith(
           listaResumenes: resumenes,
-          resumenSeleccionado: resumenes.isNotEmpty ? resumenes.first : null,
+          resumenSeleccionado: resumenSeleccionado,
+        );
+      } else {
+        state = state.copyWith(
+          almacenes: [],
+          almacenSeleccionado: null,
+          isLoadingAlmacenes: false,
+          tomasInventario: [],
+          listaResumenes: [],
+          resumenSeleccionado: null,
         );
       }
     } catch (e) {
+      state = state.copyWith(isLoadingAlmacenes: false);
       rethrow;
     }
   }

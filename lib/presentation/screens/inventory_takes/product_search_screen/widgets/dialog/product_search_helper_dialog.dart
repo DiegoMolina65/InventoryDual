@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m_dual_inventario/config/theme/app_theme.dart';
 import 'package:m_dual_inventario/domain/entities/lotes/lotes.dart';
+import 'package:m_dual_inventario/presentation/screens/inventory_takes/product_search_screen/provider/product_search_provider.dart';
+import 'package:m_dual_inventario/presentation/screens/login/provider/auth_provider.dart';
+import 'package:m_dual_inventario/shared/helpers/extensions/number_extensions.dart';
 import 'package:m_dual_inventario/shared/widgets/export_custom_widgets.dart';
 
 class DialogoBusquedaProductoHelper {
@@ -130,14 +134,24 @@ class DialogoBusquedaProductoHelper {
   }
 
   static Future<List<LotesEntidad>?> seleccionarLotes(
-      BuildContext context, List<LotesEntidad> lotes,
+      BuildContext context, WidgetRef ref, List<LotesEntidad> lotes,
       {List<LotesEntidad>? lotesSeleccionados}) async {
+    final filtrarStockCero =
+        ref.read(busquedaProductoProvider).filtrarStockCero;
+
+    final lotesAMostrar = filtrarStockCero
+        ? lotes.where((lote) => lote.stock > 0.00).toList()
+        : lotes;
+
     List<bool> seleccion = List<bool>.generate(
-      lotes.length,
+      lotesAMostrar.length,
       (i) =>
-          lotesSeleccionados?.any((l) => l.codigo == lotes[i].codigo) ?? true,
+          lotesSeleccionados?.any((l) => l.codigo == lotesAMostrar[i].codigo) ??
+          true,
     );
+
     List<LotesEntidad>? resultado;
+    final user = ref.watch(authProvider).usuario;
 
     String formatearFecha(dynamic fechaCompleta) {
       try {
@@ -253,9 +267,9 @@ class DialogoBusquedaProductoHelper {
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: lotes.length,
+                    itemCount: lotesAMostrar.length,
                     itemBuilder: (_, i) {
-                      final lote = lotes[i];
+                      final lote = lotesAMostrar[i];
                       final fecha = lote.fechaExpiracion;
                       final color = statusColor(fecha);
                       return Card(
@@ -369,30 +383,35 @@ class DialogoBusquedaProductoHelper {
                                   ],
                                 ),
                                 const SizedBox(height: 5),
-                                Row(
-                                  children: [
-                                    Icon(Icons.inventory_2,
-                                        size: 16, color: AppTheme.primaryColor),
-                                    const SizedBox(width: 6),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text('Stock Disponible',
-                                            style: TextStyle(
-                                                fontSize: 11,
-                                                color: Colors.grey,
-                                                fontWeight: FontWeight.w500)),
-                                        Text(
-                                            '${lote.stock.toStringAsFixed(2)} UND',
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            )),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                (user?.esSupervisor ?? false)
+                                    ? Row(
+                                        children: [
+                                          Icon(Icons.inventory_2,
+                                              size: 16,
+                                              color: AppTheme.primaryColor),
+                                          const SizedBox(width: 6),
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const Text('Stock Disponible',
+                                                  style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
+                                              Text(
+                                                  lote.stock
+                                                      .toStringDecimal('UND'),
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                  )),
+                                            ],
+                                          ),
+                                        ],
+                                      )
+                                    : const SizedBox.shrink()
                               ],
                             ),
                           ),
@@ -423,8 +442,8 @@ class DialogoBusquedaProductoHelper {
           backgroundColor: AppTheme.successColor,
           onPressed: () {
             resultado = [
-              for (var i = 0; i < lotes.length; i++)
-                if (seleccion[i]) lotes[i]
+              for (var i = 0; i < lotesAMostrar.length; i++)
+                if (seleccion[i]) lotesAMostrar[i]
             ];
             CustomShowDialogHelper.closeShowDialogo(context);
           },

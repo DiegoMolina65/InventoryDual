@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:m_dual_inventario/infrastructure/models/batch/batch_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/list_detail_product_model/list_detail_product_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/product_model/product_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/count/detail_count/detail_count_model.dart';

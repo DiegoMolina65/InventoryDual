@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/detalle_recuento_inventario/detalle_recuento_inventario.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
-import 'package:m_dual_inventario/domain/entities/usuario/usuario.dart';
+import 'package:m_dual_inventario/presentation/screens/login/provider/auth_provider.dart';
 import 'package:m_dual_inventario/shared/helpers/extensions/number_extensions.dart';
 
-class CustomProductCard extends StatefulWidget {
+class CustomProductCard extends ConsumerStatefulWidget {
   final Producto? producto;
-  final Usuario? usuario;
   final DetalleRecuentoInventario? detalleConteo;
   final String? lote;
   final bool isSelected;
@@ -17,7 +17,6 @@ class CustomProductCard extends StatefulWidget {
   const CustomProductCard({
     Key? key,
     this.lote,
-    this.usuario,
     this.detalleConteo,
     this.isSelected = false,
     this.onTap,
@@ -28,10 +27,10 @@ class CustomProductCard extends StatefulWidget {
         super(key: key);
 
   @override
-  State<CustomProductCard> createState() => _CustomProductCardState();
+  ConsumerState<CustomProductCard> createState() => _CustomProductCardState();
 }
 
-class _CustomProductCardState extends State<CustomProductCard>
+class _CustomProductCardState extends ConsumerState<CustomProductCard>
     with TickerProviderStateMixin {
   AnimationController? _blinkController;
   Animation<double>? _blinkAnimation;
@@ -145,6 +144,7 @@ class _CustomProductCardState extends State<CustomProductCard>
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(authProvider).usuario;
     final primaryColor = Theme.of(context).colorScheme.primary;
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
@@ -332,7 +332,7 @@ class _CustomProductCardState extends State<CustomProductCard>
                           ],
                         ),
                         SizedBox(height: isTablet ? 6 : 4),
-                        (widget.usuario?.esSupervisor ?? false)
+                        (user?.esSupervisor ?? false)
                             ? Row(
                                 children: [
                                   Icon(Icons.inventory,

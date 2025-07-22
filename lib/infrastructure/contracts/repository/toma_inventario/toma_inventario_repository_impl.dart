@@ -23,4 +23,9 @@ class TomaInventarioRepositoryImpl extends TomaInventarioRepository {
   Future<int> guardarTomaInventario(TomasInventario tomaInventario) {
     return dataSource.guardarTomaInventario(tomaInventario);
   }
+
+  @override
+  Future<TomasInventario> obtenerTomaConResultados(int codigoTomaInventario) {
+    return dataSource.obtenerTomaConResultados(codigoTomaInventario);
+  }
 }

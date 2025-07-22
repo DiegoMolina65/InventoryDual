@@ -6,4 +6,6 @@ abstract class TomaInventarioDatasource {
   Future<TomasInventario> buscarTomaInventario(int codigoTomaInventario);
 
   Future<int> guardarTomaInventario(TomasInventario tomaInventario);
+
+  Future<TomasInventario> obtenerTomaConResultados(int codigoTomaInventario);
 }

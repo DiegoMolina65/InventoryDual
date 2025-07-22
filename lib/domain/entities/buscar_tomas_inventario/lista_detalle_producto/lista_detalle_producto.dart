@@ -2,6 +2,7 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
+import 'package:m_dual_inventario/domain/entities/lista_conteo_resultados/lista_conteo_resultados_entidad.dart';
 
 part 'lista_detalle_producto.freezed.dart';
 part 'lista_detalle_producto.g.dart';
@@ -17,6 +18,8 @@ class ListaDetalleProducto with _$ListaDetalleProducto {
     String? codigoLote,
     @JsonKey(name: 'cantidad_verificada') required double cantidadVerificada,
     required Producto producto,
+    @JsonKey(name: 'lista_conteo_resultado')
+    List<ListaConteoResultadosEntidad>? listaConteoResultado,
   }) = _ListaDetalleProducto;
 
   factory ListaDetalleProducto.fromJson(Map<String, Object?> json) =>

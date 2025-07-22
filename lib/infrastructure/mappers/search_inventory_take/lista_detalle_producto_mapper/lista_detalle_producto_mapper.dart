@@ -1,5 +1,6 @@
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/lista_detalle_producto/lista_detalle_producto.dart';
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/producto/producto.dart';
+import 'package:m_dual_inventario/infrastructure/mappers/list_count_results/list_count_results_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/mappers/search_inventory_take/producto_mapper/producto_mapper.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/list_detail_product_model/list_detail_product_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/product_model/product_model.dart';
@@ -19,6 +20,9 @@ class ListaDetalleProductoMapper {
       codigoLote: productDetailModel.codeBatch,
       cantidadVerificada: productDetailModel.quantityVerified,
       producto: producto,
+      listaConteoResultado: productDetailModel.listCountResults
+          ?.map((e) => ListCountResultsMapper.mapearListaConteoResultado(e))
+          .toList(),
     );
   }
 

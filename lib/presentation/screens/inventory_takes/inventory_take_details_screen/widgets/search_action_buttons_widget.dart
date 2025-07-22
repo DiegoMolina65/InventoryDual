@@ -97,7 +97,11 @@ class _AccionBotonesWidgetState extends ConsumerState<AccionBotonesWidget> {
 
     try {
       await DialogoBusquedaHelper.mostrarDialogoYRealizarBusqueda(
-          context, ref, tipoBusqueda);
+          context, ref, tipoBusqueda, getContext: () {
+        return context;
+      }, getRef: () {
+        return ref;
+      });
 
       _deselectOption();
     } finally {

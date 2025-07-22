@@ -136,10 +136,15 @@ class ApiCliente extends DioClientService {
     }
   }
 
-  Future<List<AlmacenXLocal>> obtenerDatosAlmacen(int codigoLocal) async {
+  Future<List<AlmacenXLocal>> obtenerDatosAlmacen(
+      int codigoLocal, int codigoUsuario) async {
     try {
       final response = await get(
-        'almacen/listarActivosPorLocal/$codigoLocal',
+        'tomaInventario/listarActivosPorLocalUsuario/',
+        queryParameters: {
+          'pCloc': codigoLocal,
+          'pCusr': codigoUsuario,
+        },
         options: Options(headers: {
           'Accept': '*/*',
         }),
@@ -198,6 +203,27 @@ class ApiCliente extends DioClientService {
     }
   }
 
+  Future<TomasInventario> obtenerTomaConResultados(
+      int codigoTomaInventario) async {
+    try {
+      final response = await get(
+        'tomaInventario/obtenerTomaConResultados/$codigoTomaInventario',
+        options: Options(headers: {
+          'Accept': '*/*',
+        }),
+      );
+
+      final tomasInventarioModel = TomasInventarioModel.fromJson(response.data);
+
+      final tomaInventario =
+          TomasInventarioMapper.mapearListarUltimasToma(tomasInventarioModel);
+
+      return tomaInventario;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<ProductModel>> buscarProductos({
     required int codigoAlmacen,
     DateTime? fechaToma,
@@ -237,8 +263,8 @@ class ApiCliente extends DioClientService {
       }
 
       final endpoint = fechaToma != null
-          ? 'producto/buscarProductosPorAlmacenXFecha'
-          : 'producto/buscarProductosPorAlmacen';
+          ? 'producto/buscarProductosPorAlmacenXFecha2'
+          : 'producto/buscarProductosPorAlmacen2';
 
       final response = await get(
         endpoint,
@@ -371,55 +397,6 @@ class ApiCliente extends DioClientService {
                 CountInventoryModel.fromJson(json),
               ))
           .toList();
-
-      // final conteos2 = conteos.map(
-      //   (conteo) {
-      //     if (conteo.codigo == 15) {
-      //       final listaDetalle = conteo.listaDetalleRecuentoInventario;
-      //       List<DetalleRecuentoInventario> nuevoDetalle = [];
-      //       for (DetalleRecuentoInventario item in listaDetalle) {
-      //         if (item.codigoLote == null || item.codigoLote!.isEmpty) {
-      //           // Si no tiene lote agregamos el detalle a la nueva lista
-      //           nuevoDetalle.add(item);
-      //           continue;
-      //         }
-      //         // tiene lote, procesamos para agrupar
-      //         DetalleRecuentoInventario? detalleAgrupado = nuevoDetalle
-      //             .where(
-      //               (element) => element.codigoProducto == item.codigoProducto,
-      //             )
-      //             .firstOrNull;
-      //         detalleAgrupado ??= item.copyWith();
-
-      //         List<LotesEntidad> nuevaListadeLotes = [
-      //           ...(detalleAgrupado.listaLotes ?? [])
-      //         ];
-
-      //         LotesEntidad nuevoLote = LotesEntidad(
-      //             codigo: item.codigoLote!,
-      //             fechaExpiracion: DateTime.now(),
-      //             stock: item.cantidadStock);
-      //         nuevaListadeLotes.add(nuevoLote);
-      //         detalleAgrupado =
-      //             detalleAgrupado.copyWith(listaLotes: nuevaListadeLotes);
-
-      //         nuevoDetalle = [
-      //           ...nuevoDetalle
-      //               .where(
-      //                 (det) =>
-      //                     det.codigoProducto != detalleAgrupado!.codigoProducto,
-      //               )
-      //               .toList(),
-      //           detalleAgrupado
-      //         ];
-      //         // nuevoDetalle.add(detalleAgrupado);
-      //       }
-      //       return conteo.copyWith(
-      //           listaDetalleRecuentoInventario: nuevoDetalle);
-      //     }
-      //     return conteo;
-      //   },
-      // ).toList();
       return conteos;
     } catch (e) {
       rethrow;

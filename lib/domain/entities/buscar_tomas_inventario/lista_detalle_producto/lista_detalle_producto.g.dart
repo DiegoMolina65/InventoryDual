@@ -17,6 +17,10 @@ _$ListaDetalleProductoImpl _$$ListaDetalleProductoImplFromJson(
       codigoLote: json['codigoLote'] as String?,
       cantidadVerificada: (json['cantidad_verificada'] as num).toDouble(),
       producto: Producto.fromJson(json['producto'] as Map<String, dynamic>),
+      listaConteoResultado: (json['lista_conteo_resultado'] as List<dynamic>?)
+          ?.map((e) =>
+              ListaConteoResultadosEntidad.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$$ListaDetalleProductoImplToJson(
@@ -30,4 +34,5 @@ Map<String, dynamic> _$$ListaDetalleProductoImplToJson(
       'codigoLote': instance.codigoLote,
       'cantidad_verificada': instance.cantidadVerificada,
       'producto': instance.producto,
+      'lista_conteo_resultado': instance.listaConteoResultado,
     };

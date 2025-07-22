@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:m_dual_inventario/infrastructure/models/list_count_results/list_count_results_model.dart';
 import 'package:m_dual_inventario/infrastructure/models/search_inventory_takes/product_model/product_model.dart';
 
 part 'list_detail_product_model.freezed.dart';
@@ -15,6 +16,7 @@ class ListDetailProductModel with _$ListDetailProductModel {
     required double quantityVerified,
     String? codeBatch,
     required ProductModel product,
+    List<ListCountResultsModel>? listCountResults,
   }) = _ListDetailProductModel;
 
   factory ListDetailProductModel.fromJson(Map<String, Object?> json) =>

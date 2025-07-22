@@ -4,17 +4,17 @@ import 'package:go_router/go_router.dart';
 import 'package:m_dual_inventario/presentation/screens/assigned_counts/assigned_counts_screen/assigned_counts_screen.dart';
 import 'package:m_dual_inventario/presentation/screens/login/provider/auth_provider.dart';
 import 'package:m_dual_inventario/presentation/screens/inventory_takes/inventory_take_screen/inventory_take_screen.dart';
+import 'package:m_dual_inventario/presentation/screens/reporte_tomas_inventario/lista_tomas_inventario_reporte/reporte_tomas_inventario_screen.dart';
 import 'package:m_dual_inventario/shared/logs/logs_dlbz.dart';
 import 'package:m_dual_inventario/shared/widgets/custom_showdialog/custom_showdialog_widget.dart';
 
 import 'package:share/share.dart';
 
 class CustomAppDrawer extends ConsumerWidget {
-  CustomAppDrawer({super.key, required this.onDrawerClosed});
-
   final VoidCallback onDrawerClosed;
-
   final GlobalKey<NavigatorState> dialogKey = GlobalKey<NavigatorState>();
+
+  CustomAppDrawer({super.key, required this.onDrawerClosed});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,24 +47,27 @@ class CustomAppDrawer extends ConsumerWidget {
 
               return Column(
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.inventory),
-                    title: const Text(
-                      'Tomas de inventario',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    tileColor: currentLocation == TomasInventarioScreen.name
-                        ? primaryColor.withOpacity(0.2)
-                        : null,
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      context.go(TomasInventarioScreen.name);
-                    },
-                  ),
+                  (user?.esSupervisor ?? false)
+                      ? ListTile(
+                          leading: const Icon(Icons.inventory),
+                          title: const Text(
+                            'Tomas de inventario',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          tileColor:
+                              currentLocation == TomasInventarioScreen.name
+                                  ? primaryColor.withOpacity(0.2)
+                                  : null,
+                          onTap: () {
+                            context.pop();
+                            context.go(TomasInventarioScreen.name);
+                          },
+                        )
+                      : const SizedBox.shrink(),
                   ListTile(
                     leading: const Icon(Icons.list),
                     title: const Text(
@@ -79,10 +82,31 @@ class CustomAppDrawer extends ConsumerWidget {
                         ? primaryColor.withOpacity(0.2)
                         : null,
                     onTap: () {
-                      Navigator.of(context).pop();
+                      context.pop();
                       context.go(ConteosAsignadosScreen.name);
                     },
                   ),
+                  (user?.esSupervisor ?? false)
+                      ? ListTile(
+                          leading: const Icon(Icons.report),
+                          title: const Text(
+                            'Reporte Tomas de inventario',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          tileColor: currentLocation ==
+                                  ReporteTomasInventarioScreen.name
+                              ? primaryColor.withOpacity(0.2)
+                              : null,
+                          onTap: () {
+                            context.pop();
+                            context.go(ReporteTomasInventarioScreen.name);
+                          },
+                        )
+                      : const SizedBox.shrink(),
                 ],
               );
             },
@@ -107,63 +131,65 @@ class CustomAppDrawer extends ConsumerWidget {
               ),
             ),
             onTap: () {
-              Navigator.of(context).pop();
+              context.pop();
               _mostrarModalCerrarSesion(context, ref);
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: const Text(
-              'Ver Logs',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            onTap: () async {
-              try {
-                //Obtén el archivo de hoy
-                final fileLog =
-                    await LogsDlbz.obtenerArchivoLog(DateTime.now());
-
-                // 2) Lée su contenido
-                final contenido = await fileLog.readAsString();
-
-                // 3) Muéstralo en un AlertDialog
-                if (contenido.trim().isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('El log está vacío')),
-                  );
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Logs del día'),
-                      content: SingleChildScrollView(
-                        child: Text(contenido),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Cerrar'),
-                        ),
-                        // Opcional: botón para compartir el texto
-                        TextButton(
-                          onPressed: () {
-                            Share.share(contenido,
-                                subject: 'Logs de la aplicación');
-                          },
-                          child: const Text('Compartir'),
-                        ),
-                      ],
+          (user?.esSupervisor ?? false)
+              ? ListTile(
+                  leading: const Icon(Icons.article_outlined),
+                  title: const Text(
+                    'Ver Logs',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
-                  );
-                }
-              } catch (e) {
-                debugPrint('Error leyendo log: $e');
-              }
-            },
-          ),
+                  ),
+                  onTap: () async {
+                    try {
+                      //Obtén el archivo de hoy
+                      final fileLog =
+                          await LogsDlbz.obtenerArchivoLog(DateTime.now());
+
+                      // 2) Lée su contenido
+                      final contenido = await fileLog.readAsString();
+
+                      // 3) Muéstralo en un AlertDialog
+                      if (contenido.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('El log está vacío')),
+                        );
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Logs del día'),
+                            content: SingleChildScrollView(
+                              child: Text(contenido),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('Cerrar'),
+                              ),
+                              // Opcional: botón para compartir el texto
+                              TextButton(
+                                onPressed: () {
+                                  Share.share(contenido,
+                                      subject: 'Logs de la aplicación');
+                                },
+                                child: const Text('Compartir'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint('Error leyendo log: $e');
+                    }
+                  },
+                )
+              : const SizedBox.shrink(),
         ],
       ),
     );

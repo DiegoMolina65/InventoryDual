@@ -4,8 +4,10 @@ import 'package:m_dual_inventario/domain/entities/almacen_por_local/almacen_x_lo
 import 'package:m_dual_inventario/domain/entities/buscar_tomas_inventario/conteo_inventario/conteo_inventario.dart';
 import 'package:m_dual_inventario/domain/repository/almacen/almacen_repository.dart';
 import 'package:m_dual_inventario/domain/repository/conteo/conteo_repository.dart';
+import 'package:m_dual_inventario/domain/repository/usuario/usuario/usuario_repository.dart';
 import 'package:m_dual_inventario/infrastructure/contracts/providers/almacen/almacen_provider.dart';
 import 'package:m_dual_inventario/infrastructure/contracts/providers/conteo/conteo_provider.dart';
+import 'package:m_dual_inventario/infrastructure/contracts/providers/usuario/usuario_provider.dart';
 import 'package:m_dual_inventario/shared/app_preferences.dart';
 
 final conteosAsignadosProvider =
@@ -13,10 +15,12 @@ final conteosAsignadosProvider =
         (ref) {
   final almacenRepository = ref.read(almacenRepositoryProvider);
   final conteoRepository = ref.read(conteoRepositoryProvider);
+  final usuarioRepository = ref.read(usuarioRepositoryProvider);
 
   return ConteosAsignadosNotifier(
     almacenRepository: almacenRepository,
     conteoRepository: conteoRepository,
+    usuarioRepository: usuarioRepository,
   );
 });
 
@@ -26,23 +30,27 @@ final navegacionDetalleProvider =
 class ConteosAsignadosNotifier extends StateNotifier<ConteosAsignadosState> {
   final AlmacenRepository almacenRepository;
   final ConteoRepository conteoRepository;
+  final UsuarioRepository usuarioRepository;
 
-  ConteosAsignadosNotifier({
-    required this.almacenRepository,
-    required this.conteoRepository,
-  }) : super(ConteosAsignadosState());
+  ConteosAsignadosNotifier(
+      {required this.almacenRepository,
+      required this.conteoRepository,
+      required this.usuarioRepository})
+      : super(ConteosAsignadosState());
 
-  void inicializarDatos() {
-    Future.microtask(() async {
-      await cargarAlmacenes();
-    });
+  void inicializarDatos() async {
+    await cargarAlmacenes();
   }
 
   Future<void> cargarAlmacenes() async {
     state = state.copyWith(isLoadingAlmacenes: true);
 
     try {
-      final almacenes = await almacenRepository.obtenerAlmacenesPorLocal();
+      // Obtener valor si el usuario es supervisor
+      final codigoUsuario =
+          await AppPreference.getValue<int>(KeyAppPreferences.codigoUsuario);
+      bool esSupervisor = (await usuarioRepository.obtenerUsuarioLocal(codigoUsuario ?? 0))?.esSupervisor ?? false;
+      final almacenes = await almacenRepository.obtenerAlmacenesPorLocal(incluirOpcionTodos: esSupervisor);
 
       if (almacenes.isNotEmpty) {
         state = state.copyWith(
@@ -52,8 +60,6 @@ class ConteosAsignadosNotifier extends StateNotifier<ConteosAsignadosState> {
         );
 
         await cargarTodosLosConteos(almacenes.first.codigo);
-      } else {
-        state = state.copyWith(isLoadingAlmacenes: false);
       }
     } catch (e) {
       state = state.copyWith(isLoadingAlmacenes: false);

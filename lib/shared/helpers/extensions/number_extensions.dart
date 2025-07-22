@@ -29,7 +29,7 @@ extension Monetario on double {
       // Si el número no tiene decimales, mostrarlo sin decimales
       // textoFormateado = '${toInt()}';
       textoFormateado = NumberFormat.currency(
-        customPattern: '#,##',
+        customPattern: '#,###',
         // symbol: textoMoneda,
         decimalDigits: 2,
         // locale: 'en_US',

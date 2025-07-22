@@ -29,6 +29,8 @@ mixin _$ListDetailProductModel {
   double get quantityVerified => throw _privateConstructorUsedError;
   String? get codeBatch => throw _privateConstructorUsedError;
   ProductModel get product => throw _privateConstructorUsedError;
+  List<ListCountResultsModel>? get listCountResults =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -50,7 +52,8 @@ abstract class $ListDetailProductModelCopyWith<$Res> {
       bool verified,
       double quantityVerified,
       String? codeBatch,
-      ProductModel product});
+      ProductModel product,
+      List<ListCountResultsModel>? listCountResults});
 
   $ProductModelCopyWith<$Res> get product;
 }
@@ -77,6 +80,7 @@ class _$ListDetailProductModelCopyWithImpl<$Res,
     Object? quantityVerified = null,
     Object? codeBatch = freezed,
     Object? product = null,
+    Object? listCountResults = freezed,
   }) {
     return _then(_value.copyWith(
       codeTI: null == codeTI
@@ -111,6 +115,10 @@ class _$ListDetailProductModelCopyWithImpl<$Res,
           ? _value.product
           : product // ignore: cast_nullable_to_non_nullable
               as ProductModel,
+      listCountResults: freezed == listCountResults
+          ? _value.listCountResults
+          : listCountResults // ignore: cast_nullable_to_non_nullable
+              as List<ListCountResultsModel>?,
     ) as $Val);
   }
 
@@ -140,7 +148,8 @@ abstract class _$$ListDetailProductModelImplCopyWith<$Res>
       bool verified,
       double quantityVerified,
       String? codeBatch,
-      ProductModel product});
+      ProductModel product,
+      List<ListCountResultsModel>? listCountResults});
 
   @override
   $ProductModelCopyWith<$Res> get product;
@@ -167,6 +176,7 @@ class __$$ListDetailProductModelImplCopyWithImpl<$Res>
     Object? quantityVerified = null,
     Object? codeBatch = freezed,
     Object? product = null,
+    Object? listCountResults = freezed,
   }) {
     return _then(_$ListDetailProductModelImpl(
       codeTI: null == codeTI
@@ -201,6 +211,10 @@ class __$$ListDetailProductModelImplCopyWithImpl<$Res>
           ? _value.product
           : product // ignore: cast_nullable_to_non_nullable
               as ProductModel,
+      listCountResults: freezed == listCountResults
+          ? _value._listCountResults
+          : listCountResults // ignore: cast_nullable_to_non_nullable
+              as List<ListCountResultsModel>?,
     ));
   }
 }
@@ -216,7 +230,9 @@ class _$ListDetailProductModelImpl implements _ListDetailProductModel {
       required this.verified,
       required this.quantityVerified,
       this.codeBatch,
-      required this.product});
+      required this.product,
+      final List<ListCountResultsModel>? listCountResults})
+      : _listCountResults = listCountResults;
 
   factory _$ListDetailProductModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$ListDetailProductModelImplFromJson(json);
@@ -237,10 +253,20 @@ class _$ListDetailProductModelImpl implements _ListDetailProductModel {
   final String? codeBatch;
   @override
   final ProductModel product;
+  final List<ListCountResultsModel>? _listCountResults;
+  @override
+  List<ListCountResultsModel>? get listCountResults {
+    final value = _listCountResults;
+    if (value == null) return null;
+    if (_listCountResults is EqualUnmodifiableListView)
+      return _listCountResults;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'ListDetailProductModel(codeTI: $codeTI, codeProduct: $codeProduct, codeUnitMeasure: $codeUnitMeasure, stock: $stock, verified: $verified, quantityVerified: $quantityVerified, codeBatch: $codeBatch, product: $product)';
+    return 'ListDetailProductModel(codeTI: $codeTI, codeProduct: $codeProduct, codeUnitMeasure: $codeUnitMeasure, stock: $stock, verified: $verified, quantityVerified: $quantityVerified, codeBatch: $codeBatch, product: $product, listCountResults: $listCountResults)';
   }
 
   @override
@@ -260,13 +286,24 @@ class _$ListDetailProductModelImpl implements _ListDetailProductModel {
                 other.quantityVerified == quantityVerified) &&
             (identical(other.codeBatch, codeBatch) ||
                 other.codeBatch == codeBatch) &&
-            (identical(other.product, product) || other.product == product));
+            (identical(other.product, product) || other.product == product) &&
+            const DeepCollectionEquality()
+                .equals(other._listCountResults, _listCountResults));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, codeTI, codeProduct,
-      codeUnitMeasure, stock, verified, quantityVerified, codeBatch, product);
+  int get hashCode => Object.hash(
+      runtimeType,
+      codeTI,
+      codeProduct,
+      codeUnitMeasure,
+      stock,
+      verified,
+      quantityVerified,
+      codeBatch,
+      product,
+      const DeepCollectionEquality().hash(_listCountResults));
 
   @JsonKey(ignore: true)
   @override
@@ -285,14 +322,16 @@ class _$ListDetailProductModelImpl implements _ListDetailProductModel {
 
 abstract class _ListDetailProductModel implements ListDetailProductModel {
   factory _ListDetailProductModel(
-      {required final int codeTI,
-      required final String codeProduct,
-      required final int codeUnitMeasure,
-      required final double stock,
-      required final bool verified,
-      required final double quantityVerified,
-      final String? codeBatch,
-      required final ProductModel product}) = _$ListDetailProductModelImpl;
+          {required final int codeTI,
+          required final String codeProduct,
+          required final int codeUnitMeasure,
+          required final double stock,
+          required final bool verified,
+          required final double quantityVerified,
+          final String? codeBatch,
+          required final ProductModel product,
+          final List<ListCountResultsModel>? listCountResults}) =
+      _$ListDetailProductModelImpl;
 
   factory _ListDetailProductModel.fromJson(Map<String, dynamic> json) =
       _$ListDetailProductModelImpl.fromJson;
@@ -313,6 +352,8 @@ abstract class _ListDetailProductModel implements ListDetailProductModel {
   String? get codeBatch;
   @override
   ProductModel get product;
+  @override
+  List<ListCountResultsModel>? get listCountResults;
   @override
   @JsonKey(ignore: true)
   _$$ListDetailProductModelImplCopyWith<_$ListDetailProductModelImpl>

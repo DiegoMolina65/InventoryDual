@@ -21,6 +21,7 @@ class EstadoBusquedaProducto {
   final bool todosSeleccionados;
   final String nombreBusqueda;
   final BusquedaStrategy? strategy;
+  final bool filtrarStockCero;
 
   EstadoBusquedaProducto({
     this.productos = const [],
@@ -33,6 +34,7 @@ class EstadoBusquedaProducto {
     this.todosSeleccionados = false,
     this.nombreBusqueda = '',
     this.strategy,
+    this.filtrarStockCero = false,
   });
 
   EstadoBusquedaProducto copyWith({
@@ -46,6 +48,7 @@ class EstadoBusquedaProducto {
     bool? todosSeleccionados,
     String? nombreBusqueda,
     BusquedaStrategy? strategy,
+    bool? filtrarStockCero,
   }) {
     return EstadoBusquedaProducto(
       productos: productos ?? this.productos,
@@ -59,7 +62,22 @@ class EstadoBusquedaProducto {
       todosSeleccionados: todosSeleccionados ?? this.todosSeleccionados,
       nombreBusqueda: nombreBusqueda ?? this.nombreBusqueda,
       strategy: strategy ?? this.strategy,
+      filtrarStockCero: filtrarStockCero ?? this.filtrarStockCero,
     );
+  }
+
+  // Método para obtener productos filtrados por stock
+  List<Producto> get productosFiltrados {
+    if (!filtrarStockCero) return productos;
+
+    return productos.where((producto) {
+      // Si el producto tiene lotes, verificar que al menos uno tenga stock > 0
+      if (producto.listaLotes != null && producto.listaLotes!.isNotEmpty) {
+        return producto.listaLotes!.any((lote) => lote.stock > 0.0);
+      }
+      // Si no tiene lotes, verificar el stock del producto directamente
+      return producto.stock > 0.0;
+    }).toList();
   }
 }
 
@@ -67,6 +85,7 @@ class BusquedaProductoNotifier extends StateNotifier<EstadoBusquedaProducto> {
   final Ref ref;
 
   BusquedaProductoNotifier(this.ref) : super(EstadoBusquedaProducto());
+
   void actualizarProductos(List<Producto> productos) {
     state = state.copyWith(
       productos: productos,
@@ -110,6 +129,49 @@ class BusquedaProductoNotifier extends StateNotifier<EstadoBusquedaProducto> {
     }
   }
 
+
+  void toggleFiltroStockCero() {
+    final nuevoFiltro = !state.filtrarStockCero;
+    List<Producto> nuevosSeleccionados = state.productosSeleccionados;
+
+    if (nuevoFiltro) {
+      nuevosSeleccionados = state.productosSeleccionados.where((producto) {
+        if (producto.listaLotes != null && producto.listaLotes!.isNotEmpty) {
+          return producto.listaLotes!.any((lote) => lote.stock > 0.00);
+        }
+        return producto.stock > 0.00;
+      }).toList();
+    }
+
+    final productosFiltrados = state.productosFiltrados;
+
+    final productosSeleccionables = productosFiltrados.where((p) {
+      if (p.listaLotes != null && p.listaLotes!.isNotEmpty) {
+        if (nuevoFiltro) {
+          return p.listaLotes!.any((lote) => lote.stock > 0.00);
+        }
+        return true;
+      } else {
+        if (nuevoFiltro) {
+          return p.stock > 0.0;
+        }
+        return true;
+      }
+    }).toList();
+
+    final todos = nuevosSeleccionados.length ==
+            productosSeleccionables.length &&
+        productosSeleccionables.isNotEmpty &&
+        nuevosSeleccionados
+            .every((selected) => productosSeleccionables.contains(selected));
+
+    state = state.copyWith(
+      filtrarStockCero: nuevoFiltro,
+      productosSeleccionados: nuevosSeleccionados,
+      todosSeleccionados: todos,
+    );
+  }
+
   void toggleSeleccionProducto(Producto producto) {
     final seleccionados = List<Producto>.from(state.productosSeleccionados);
 
@@ -122,14 +184,28 @@ class BusquedaProductoNotifier extends StateNotifier<EstadoBusquedaProducto> {
       seleccionados.add(producto);
     }
 
-    final todosProductosConLotesNoVacios = state.productos
-        .where((p) => p.listaLotes != null && p.listaLotes!.isNotEmpty);
+    final productosFiltrados = state.productosFiltrados;
 
-    final todos = seleccionados.length ==
-            todosProductosConLotesNoVacios.length &&
-        todosProductosConLotesNoVacios.isNotEmpty &&
-        seleccionados.every(
-            (selected) => todosProductosConLotesNoVacios.contains(selected));
+    final productosSeleccionables = productosFiltrados.where((p) {
+      if (p.listaLotes != null && p.listaLotes!.isNotEmpty) {
+        // Para productos con lotes, verificar si tienen lotes con stock > 0
+        if (state.filtrarStockCero) {
+          return p.listaLotes!.any((lote) => lote.stock > 0);
+        }
+        return true;
+      } else {
+        // Para productos sin lotes, verificar stock directo
+        if (state.filtrarStockCero) {
+          return p.stock > 0;
+        }
+        return true;
+      }
+    }).toList();
+
+    final todos = seleccionados.length == productosSeleccionables.length &&
+        productosSeleccionables.isNotEmpty &&
+        seleccionados
+            .every((selected) => productosSeleccionables.contains(selected));
 
     state = state.copyWith(
       productosSeleccionados: seleccionados,
@@ -140,7 +216,15 @@ class BusquedaProductoNotifier extends StateNotifier<EstadoBusquedaProducto> {
   void toggleSeleccionProductoConLotes(
       Producto producto, List<LotesEntidad>? lotesSeleccionados) {
     if (lotesSeleccionados == null) return;
-    final productoConLotes = producto.copyWith(listaLotes: lotesSeleccionados);
+
+    // Filtrar lotes con stock > 0 si el filtro está activado
+    List<LotesEntidad> lotesFiltrados = lotesSeleccionados;
+    if (state.filtrarStockCero) {
+      lotesFiltrados =
+          lotesSeleccionados.where((lote) => lote.stock > 0).toList();
+    }
+
+    final productoConLotes = producto.copyWith(listaLotes: lotesFiltrados);
     toggleSeleccionProducto(productoConLotes);
   }
 
@@ -155,8 +239,27 @@ class BusquedaProductoNotifier extends StateNotifier<EstadoBusquedaProducto> {
   }
 
   void seleccionarTodosLosProductos() {
+    final productosFiltrados = state.productosFiltrados;
+
+    // Filtrar productos que pueden ser seleccionados
+    final productosSeleccionables = productosFiltrados.where((p) {
+      if (p.listaLotes != null && p.listaLotes!.isNotEmpty) {
+        // Para productos con lotes, verificar si tienen lotes con stock > 0
+        if (state.filtrarStockCero) {
+          return p.listaLotes!.any((lote) => lote.stock > 0);
+        }
+        return true;
+      } else {
+        // Para productos sin lotes, verificar stock directo
+        if (state.filtrarStockCero) {
+          return p.stock > 0;
+        }
+        return true;
+      }
+    }).toList();
+
     state = state.copyWith(
-      productosSeleccionados: List.from(state.productos),
+      productosSeleccionados: List.from(productosSeleccionables), // MODIFICADO
       todosSeleccionados: true,
     );
   }

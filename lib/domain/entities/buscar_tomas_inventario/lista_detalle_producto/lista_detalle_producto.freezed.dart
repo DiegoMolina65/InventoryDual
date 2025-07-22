@@ -32,6 +32,9 @@ mixin _$ListaDetalleProducto {
   @JsonKey(name: 'cantidad_verificada')
   double get cantidadVerificada => throw _privateConstructorUsedError;
   Producto get producto => throw _privateConstructorUsedError;
+  @JsonKey(name: 'lista_conteo_resultado')
+  List<ListaConteoResultadosEntidad>? get listaConteoResultado =>
+      throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -53,7 +56,9 @@ abstract class $ListaDetalleProductoCopyWith<$Res> {
       bool verificado,
       String? codigoLote,
       @JsonKey(name: 'cantidad_verificada') double cantidadVerificada,
-      Producto producto});
+      Producto producto,
+      @JsonKey(name: 'lista_conteo_resultado')
+      List<ListaConteoResultadosEntidad>? listaConteoResultado});
 
   $ProductoCopyWith<$Res> get producto;
 }
@@ -80,6 +85,7 @@ class _$ListaDetalleProductoCopyWithImpl<$Res,
     Object? codigoLote = freezed,
     Object? cantidadVerificada = null,
     Object? producto = null,
+    Object? listaConteoResultado = freezed,
   }) {
     return _then(_value.copyWith(
       codigoTomaInventario: null == codigoTomaInventario
@@ -114,6 +120,10 @@ class _$ListaDetalleProductoCopyWithImpl<$Res,
           ? _value.producto
           : producto // ignore: cast_nullable_to_non_nullable
               as Producto,
+      listaConteoResultado: freezed == listaConteoResultado
+          ? _value.listaConteoResultado
+          : listaConteoResultado // ignore: cast_nullable_to_non_nullable
+              as List<ListaConteoResultadosEntidad>?,
     ) as $Val);
   }
 
@@ -142,7 +152,9 @@ abstract class _$$ListaDetalleProductoImplCopyWith<$Res>
       bool verificado,
       String? codigoLote,
       @JsonKey(name: 'cantidad_verificada') double cantidadVerificada,
-      Producto producto});
+      Producto producto,
+      @JsonKey(name: 'lista_conteo_resultado')
+      List<ListaConteoResultadosEntidad>? listaConteoResultado});
 
   @override
   $ProductoCopyWith<$Res> get producto;
@@ -167,6 +179,7 @@ class __$$ListaDetalleProductoImplCopyWithImpl<$Res>
     Object? codigoLote = freezed,
     Object? cantidadVerificada = null,
     Object? producto = null,
+    Object? listaConteoResultado = freezed,
   }) {
     return _then(_$ListaDetalleProductoImpl(
       codigoTomaInventario: null == codigoTomaInventario
@@ -201,6 +214,10 @@ class __$$ListaDetalleProductoImplCopyWithImpl<$Res>
           ? _value.producto
           : producto // ignore: cast_nullable_to_non_nullable
               as Producto,
+      listaConteoResultado: freezed == listaConteoResultado
+          ? _value._listaConteoResultado
+          : listaConteoResultado // ignore: cast_nullable_to_non_nullable
+              as List<ListaConteoResultadosEntidad>?,
     ));
   }
 }
@@ -217,7 +234,10 @@ class _$ListaDetalleProductoImpl implements _ListaDetalleProducto {
       required this.verificado,
       this.codigoLote,
       @JsonKey(name: 'cantidad_verificada') required this.cantidadVerificada,
-      required this.producto});
+      required this.producto,
+      @JsonKey(name: 'lista_conteo_resultado')
+      final List<ListaConteoResultadosEntidad>? listaConteoResultado})
+      : _listaConteoResultado = listaConteoResultado;
 
   factory _$ListaDetalleProductoImpl.fromJson(Map<String, dynamic> json) =>
       _$$ListaDetalleProductoImplFromJson(json);
@@ -242,10 +262,21 @@ class _$ListaDetalleProductoImpl implements _ListaDetalleProducto {
   final double cantidadVerificada;
   @override
   final Producto producto;
+  final List<ListaConteoResultadosEntidad>? _listaConteoResultado;
+  @override
+  @JsonKey(name: 'lista_conteo_resultado')
+  List<ListaConteoResultadosEntidad>? get listaConteoResultado {
+    final value = _listaConteoResultado;
+    if (value == null) return null;
+    if (_listaConteoResultado is EqualUnmodifiableListView)
+      return _listaConteoResultado;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'ListaDetalleProducto(codigoTomaInventario: $codigoTomaInventario, codigoProducto: $codigoProducto, codigoUnidadMedida: $codigoUnidadMedida, stock: $stock, verificado: $verificado, codigoLote: $codigoLote, cantidadVerificada: $cantidadVerificada, producto: $producto)';
+    return 'ListaDetalleProducto(codigoTomaInventario: $codigoTomaInventario, codigoProducto: $codigoProducto, codigoUnidadMedida: $codigoUnidadMedida, stock: $stock, verificado: $verificado, codigoLote: $codigoLote, cantidadVerificada: $cantidadVerificada, producto: $producto, listaConteoResultado: $listaConteoResultado)';
   }
 
   @override
@@ -267,7 +298,9 @@ class _$ListaDetalleProductoImpl implements _ListaDetalleProducto {
             (identical(other.cantidadVerificada, cantidadVerificada) ||
                 other.cantidadVerificada == cantidadVerificada) &&
             (identical(other.producto, producto) ||
-                other.producto == producto));
+                other.producto == producto) &&
+            const DeepCollectionEquality()
+                .equals(other._listaConteoResultado, _listaConteoResultado));
   }
 
   @JsonKey(ignore: true)
@@ -281,7 +314,8 @@ class _$ListaDetalleProductoImpl implements _ListaDetalleProducto {
       verificado,
       codigoLote,
       cantidadVerificada,
-      producto);
+      producto,
+      const DeepCollectionEquality().hash(_listaConteoResultado));
 
   @JsonKey(ignore: true)
   @override
@@ -311,7 +345,10 @@ abstract class _ListaDetalleProducto implements ListaDetalleProducto {
       final String? codigoLote,
       @JsonKey(name: 'cantidad_verificada')
       required final double cantidadVerificada,
-      required final Producto producto}) = _$ListaDetalleProductoImpl;
+      required final Producto producto,
+      @JsonKey(name: 'lista_conteo_resultado')
+      final List<ListaConteoResultadosEntidad>?
+          listaConteoResultado}) = _$ListaDetalleProductoImpl;
 
   factory _ListaDetalleProducto.fromJson(Map<String, dynamic> json) =
       _$ListaDetalleProductoImpl.fromJson;
@@ -336,6 +373,9 @@ abstract class _ListaDetalleProducto implements ListaDetalleProducto {
   double get cantidadVerificada;
   @override
   Producto get producto;
+  @override
+  @JsonKey(name: 'lista_conteo_resultado')
+  List<ListaConteoResultadosEntidad>? get listaConteoResultado;
   @override
   @JsonKey(ignore: true)
   _$$ListaDetalleProductoImplCopyWith<_$ListaDetalleProductoImpl>

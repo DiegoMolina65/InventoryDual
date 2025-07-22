@@ -19,4 +19,10 @@ class TomaInventarioDatasourceImpl extends TomaInventarioDatasource {
   Future<int> guardarTomaInventario(TomasInventario tomaInventario) async {
     return await apicliente.guardarTomaInventario(tomaInventario);
   }
+
+  @override
+  Future<TomasInventario> obtenerTomaConResultados(
+      int codigoTomaInventario) async {
+    return await apicliente.obtenerTomaConResultados(codigoTomaInventario);
+  }
 }

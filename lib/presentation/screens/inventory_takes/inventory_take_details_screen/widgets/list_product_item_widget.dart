@@ -14,7 +14,8 @@ class DetalleProductoItemWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return CustomProductCard(
-      producto: detalleTomaInventario.producto,
+      producto: detalleTomaInventario.producto
+          .copyWith(stock: detalleTomaInventario.stock),
       lote: detalleTomaInventario.codigoLote,
       showCheckbox: false,
       onDelete: () async {
@@ -25,22 +26,6 @@ class DetalleProductoItemWidget extends ConsumerWidget {
           onEliminar?.call();
         }
       },
-      // onTapLotes: () async {
-      //   final List<LotesEntidad>? lotesAsociadosAEsteProducto =
-      //       detalleTomaInventario.producto.listaLotes;
-      //   final String nombreDelProducto = detalleTomaInventario.producto.nombre;
-
-      //   if (lotesAsociadosAEsteProducto == null ||
-      //       lotesAsociadosAEsteProducto.isEmpty) {
-      //     return;
-      //   }
-
-      //   await DialogoDetalleTomaInventarioHelper.mostrarLotesDeProducto(
-      //     context,
-      //     lotesAsociadosAEsteProducto,
-      //     nombreDelProducto,
-      //   );
-      // },
     );
   }
 }

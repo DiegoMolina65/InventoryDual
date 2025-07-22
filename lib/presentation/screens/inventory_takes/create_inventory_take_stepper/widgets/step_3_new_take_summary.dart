@@ -151,6 +151,7 @@ class StepTercerPasoResumenNuevaToma extends ConsumerWidget {
     final detalleProvider = ref.read(detalleTomaInventarioProvider);
     final stepperNotifier =
         ref.read(stepperCrearTomaInventarioProvider.notifier);
+    final stepperState = ref.read(stepperCrearTomaInventarioProvider);
 
     stepperNotifier.sincronizarProductos(detalleProvider.listaDetalleProducto);
 
@@ -158,13 +159,20 @@ class StepTercerPasoResumenNuevaToma extends ConsumerWidget {
         await DialogoStepperHelper.crearNuevaTomaInventarioDialogo(context);
     if (guardar) {
       await stepperNotifier.guardarCambiosStepper();
+
+      // Obtener almacen seleccionado
+      final almacenSeleccionado = stepperState.almacenSeleccionado;
+
       await ref
           .read(tomasInventarioScreenProvider.notifier)
           .refrescarTomasInventario()
           .ejecutar();
 
       if (context.mounted) {
-        context.go(TomasInventarioScreen.name, extra: {'refresh': true});
+        context.go(TomasInventarioScreen.name, extra: {
+          'refresh': true,
+          'almacenCodigo': almacenSeleccionado?.codigo
+        });
       }
       stepperNotifier.resetStepper();
     }
